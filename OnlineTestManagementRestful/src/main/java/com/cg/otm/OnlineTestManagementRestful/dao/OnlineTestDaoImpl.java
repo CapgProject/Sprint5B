@@ -7,6 +7,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.springframework.stereotype.Repository;
+
 import com.cg.otm.OnlineTestManagementRestful.dto.OnlineTest;
 import com.cg.otm.OnlineTestManagementRestful.dto.Question;
 import com.cg.otm.OnlineTestManagementRestful.dto.User;
@@ -15,7 +17,7 @@ import com.cg.otm.OnlineTestManagementRestful.exception.UserException;
 
 
 
-
+@Repository("testdao")
 public class OnlineTestDaoImpl implements OnlineTestDao {
 
 	@PersistenceContext

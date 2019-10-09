@@ -12,7 +12,6 @@ public interface OnlineTestService {
 	public OnlineTest addTest(OnlineTest onlineTest) throws UserException;
 	public OnlineTest updateTest(Long testId, OnlineTest onlineTest) throws UserException;
 	public OnlineTest deleteTest(Long testId) throws UserException;
-	public Question addQuestion(Long testId, Question question) throws UserException;
 	public Question updateQuestion(Long testId, Long questionId, Question question) throws UserException;
 	public Question deleteQuestion(Long testId, Long questionId) throws UserException;
 	public User registerUser(User user) throws UserException;
