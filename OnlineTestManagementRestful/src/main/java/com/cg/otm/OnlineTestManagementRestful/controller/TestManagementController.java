@@ -18,9 +18,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,36 +51,32 @@ public class TestManagementController {
 		return "home";
 	}
 
-	/*Mapping for the page to display add test form*/
-	@RequestMapping(value = "/addtest", method = RequestMethod.GET)
-	public String showAddTest(HttpSession session) {
-		System.out.println(session.getAttribute("user"));
-		return "AddTest";
-	}
+//	/*Mapping for the page to display add test form*/
+//	@GetMapping(value = "/addtest")
+//	public String showAddTest() {
+//		return "AddTest";
+//	}
 
 	/*Mapping for the page to display after add test form is submitted*/
-	@RequestMapping(value = "/addtestsubmit", method = RequestMethod.POST)
-	public String addTest(@RequestParam("testName") String name,
-			@RequestParam("testDuration") @DateTimeFormat(pattern = "HH:mm:ss") LocalTime duration,
-			@RequestParam(name = "startTime") @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss") LocalDateTime startTime,
-			@RequestParam("endTime") @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss") LocalDateTime endTime) {
+	@PostMapping(value = "/addtest")
+	public ResponseEntity<String> addTest(@ModelAttribute("test") OnlineTest test) {
+		OnlineTest testOne = new OnlineTest();
 		try {
-			OnlineTest test = new OnlineTest();
 			Set<Question> question = new HashSet<Question>();
-			test.setTestName(name);
-			test.setTestTotalMarks(new Double(0));
-			test.setTestDuration(duration);
-			test.setStartTime(startTime);
-			test.setEndTime(endTime);
-			test.setTestMarksScored(new Double(0));
-			test.setIsdeleted(false);
-			test.setIsTestAssigned(false);
-			test.setTestQuestions(question);
-			testservice.addTest(test);
+			testOne.setTestName(test.getTestName());
+			testOne.setTestTotalMarks(new Double(0));
+			testOne.setTestDuration(test.getTestDuration());
+			testOne.setStartTime(test.getStartTime());
+			testOne.setEndTime(test.getEndTime());
+			testOne.setTestMarksScored(new Double(0));
+			testOne.setIsdeleted(false);
+			testOne.setIsTestAssigned(false);
+			testOne.setTestQuestions(question);
+			testservice.addTest(testOne);
 		} catch (UserException e) {
-			System.out.println(e.getMessage());
+			return new ResponseEntity<String>("Data not added", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return "admin";
+		return new ResponseEntity<String>(testOne.toString(),HttpStatus.OK);
 	}
 
 	/*Mapping for the page to display add question form*/
@@ -135,9 +133,14 @@ public class TestManagementController {
 	
 	/*Mapping for the table to display all tests*/
 	@RequestMapping(value = "/showalltests", method = RequestMethod.GET)
-	public ModelAndView showTest() {
+	public ResponseEntity<List<OnlineTest>> showTest() {
 		List<OnlineTest> testList = testservice.getTests();
-		return new ModelAndView("ShowTest", "testdata", testList);
+		if(testList ==null) {
+			return new ResponseEntity<List<OnlineTest>>(HttpStatus.NO_CONTENT);
+		}
+		else {
+			return new ResponseEntity<List<OnlineTest>>(testList, HttpStatus.OK);
+		}
 	}
 
 	/*Mapping for the table to display all users*/
@@ -157,15 +160,20 @@ public class TestManagementController {
 	}
 
 	/*Mapping for the page after form is submitted*/
-	@RequestMapping(value = "removetestsubmit", method = RequestMethod.POST)
-	public String removeTest(@RequestParam("testid") long id) {
+	@DeleteMapping(value = "removetestsubmit")
+	public ResponseEntity<?> removeTest(@RequestParam("testid") long id) {
 		try {
 			OnlineTest deleteTest = testservice.searchTest(id);
-			testservice.deleteTest(deleteTest.getTestId());
+			OnlineTest deletedTest = testservice.deleteTest(deleteTest.getTestId());
+			if(deletedTest != null) {
+				return new ResponseEntity<OnlineTest>(deletedTest,HttpStatus.OK);
+			}
+			else {
+				return new ResponseEntity<String>("Something went wrong please try again later",HttpStatus.INTERNAL_SERVER_ERROR);
+			}
 		} catch (UserException e) {
-			System.out.println(e.getMessage());
+			return new ResponseEntity<String>("Test id doesnt exist", HttpStatus.BAD_REQUEST);
 		}
-		return "admin";
 	}
 
 	/*Mapping for the form to take input of question to be deleted*/
@@ -273,41 +281,41 @@ public class TestManagementController {
 		return "UpdateTest";
 	}
 
-	@RequestMapping(value = "/updatetestinput", method = RequestMethod.POST)
-	public ModelAndView updateTest(@RequestParam("testid") long id) {
+	@GetMapping(value = "/updatetestinput")
+	public ResponseEntity<?> updateTest(@RequestParam("testid") long id) {
 		OnlineTest test;
 		try {
 			test = testservice.searchTest(id);
-			return new ModelAndView("UpdateTest", "Update", test);
+			return new ResponseEntity<OnlineTest>(test,HttpStatus.OK);
 		} catch (UserException e) {
 			System.out.println(e.getMessage());
+			return new ResponseEntity<String>("Test not found", HttpStatus.NO_CONTENT);
 		}
-		return new ModelAndView("admin");
 	}
 
-	@RequestMapping(value = "/updatetestsubmit", method = RequestMethod.POST)
-	public String actualUpdate(@RequestParam("testId") long id, @RequestParam("testName") String name,
-			@RequestParam("testDuration") @DateTimeFormat(pattern = "HH:mm:ss") LocalTime duration,
-			@RequestParam(name = "startTime") @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss") LocalDateTime startTime,
-			@RequestParam("endTime") @DateTimeFormat(pattern = "dd-MM-yyyy HH:mm:ss") LocalDateTime endTime) {
-		OnlineTest test = new OnlineTest();
+	@PutMapping(value = "/updatetestinput")
+	public ResponseEntity<?> actualUpdate(@ModelAttribute("test") OnlineTest test) {
+		OnlineTest testOne = new OnlineTest();
 		Set<Question> questions = new HashSet<Question>();
-		test.setTestId(id);
-		test.setTestName(name);
-		test.setTestDuration(duration);
-		test.setStartTime(startTime);
-		test.setEndTime(endTime);
-		test.setIsdeleted(false);
-		test.setTestMarksScored(new Double(0));
-		test.setTestTotalMarks(new Double(0));
-		test.setTestQuestions(questions);
+		testOne.setTestId(test.getTestId());
+		testOne.setTestName(test.getTestName());
+		testOne.setTestDuration(test.getTestDuration());
+		testOne.setStartTime(test.getStartTime());
+		testOne.setEndTime(test.getEndTime());
+		testOne.setIsdeleted(false);
+		testOne.setTestMarksScored(new Double(0));
+		testOne.setTestTotalMarks(new Double(0));
+		testOne.setTestQuestions(questions);
+		testOne.setIsTestAssigned(false);
 		try {
-			testservice.updateTest(id, test);
+			OnlineTest returnedTest = testservice.updateTest(test.getTestId(), testOne);
+			return new ResponseEntity<OnlineTest>(returnedTest, HttpStatus.OK);
 		} catch (UserException e) {
 			System.out.println(e.getMessage());
+			return new ResponseEntity<String>("The test wasnt updated due to some error", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return "admin";
 	}
+
 
 	@RequestMapping(value = "/updatequestion", method = RequestMethod.GET)
 	public String showUpdateQuestion(@ModelAttribute("question") Question question) {
