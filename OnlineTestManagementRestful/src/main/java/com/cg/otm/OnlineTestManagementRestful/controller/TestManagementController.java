@@ -79,17 +79,17 @@ public class TestManagementController {
 		return new ResponseEntity<String>(testOne.toString(),HttpStatus.OK);
 	}
 
-	/*Mapping for the page to display add question form*/
-	@RequestMapping(value = "/addquestion", method = RequestMethod.GET)
-	public String showAddQuestion(@ModelAttribute("question") Question question) {
-		return "AddQuestion";
-	}
+//	/*Mapping for the page to display add question form*/
+//	@RequestMapping(value = "/addquestion", method = RequestMethod.GET)
+//	public String showAddQuestion(@ModelAttribute("question") Question question) {
+//		return "AddQuestion";
+//	}
 
 	/*Mapping for the page to display after add question form is submitted*/
-	@RequestMapping(value = "/addquestionsubmit", method = RequestMethod.POST)
-	public String addQuestion(@RequestParam("testid") long id, @RequestParam("exfile") MultipartFile file) {
+	@PostMapping(value = "/addquestionsubmit")
+	public ResponseEntity<String> addQuestion(@RequestParam("testid") long id, @RequestParam("exfile") MultipartFile file) {
 		try {
-			String UPLOAD_DIRECTORY = "E:\\Soft\\Soft 2\\apache-tomcat-8.5.45-windows-x64\\apache-tomcat-8.5.45\\webapps\\Excel_Files";
+			String UPLOAD_DIRECTORY = "E:\\Excel_Files";
 			String fileName = file.getOriginalFilename();
 			File pathFile = new File(UPLOAD_DIRECTORY);
 			if (!pathFile.exists()) {
@@ -98,16 +98,12 @@ public class TestManagementController {
 
 			long time = new Date().getTime();
 			pathFile = new File(UPLOAD_DIRECTORY + "\\" + time + fileName);
-			try {
-				file.transferTo(pathFile);
-			} catch (IOException e) {
-				System.out.println("error!");
-			}
+			file.transferTo(pathFile);
 			testservice.readFromExcel(id, fileName, time);
 		} catch (UserException | IOException e) {
-			System.out.println(e.getMessage());
+			return new ResponseEntity<String>("Data could not be added!", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return "admin";
+		return new ResponseEntity<String>("Data Added Successfully!", HttpStatus.OK);
 	}
 
 	/*Mapping for the page to display add user form*/
@@ -176,22 +172,23 @@ public class TestManagementController {
 		}
 	}
 
-	/*Mapping for the form to take input of question to be deleted*/
-	@RequestMapping(value = "/removequestion", method = RequestMethod.GET)
-	public String showRemoveQuestion() {
-		return "RemoveQuestion";
-	}
+//	/*Mapping for the form to take input of question to be deleted*/
+//	@RequestMapping(value = "/removequestion", method = RequestMethod.GET)
+//	public String showRemoveQuestion() {
+//		return "RemoveQuestion";
+//	}
 
 	/*Mapping for the page after form is submitted*/
-	@RequestMapping(value = "removequestionsubmit", method = RequestMethod.POST)
-	public String removeQuestion(@RequestParam("questionid") long id) {
+	@PostMapping(value = "removequestionsubmit")
+	public ResponseEntity<?> removeQuestion(@RequestParam("questionid") long id) {
+		Question deletedQuestion;
 		try {
 			Question question = testservice.searchQuestion(id);
-			testservice.deleteQuestion(question.getOnlinetest().getTestId(), question.getQuestionId());
+			deletedQuestion = testservice.deleteQuestion(question.getOnlinetest().getTestId(), question.getQuestionId());
 		} catch (UserException e) {
-			System.out.println(e.getMessage());
+			return new ResponseEntity<String>("Question could not be deleted!", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return "admin";
+		return new ResponseEntity<String>(deletedQuestion.toString(), HttpStatus.OK);
 	}
 
 	/*Mapping for the page where the user can give test and see the first question*/
