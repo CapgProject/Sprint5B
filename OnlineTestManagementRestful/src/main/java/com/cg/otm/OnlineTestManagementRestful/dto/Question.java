@@ -151,7 +151,7 @@ public class Question {
 	public String toString() {
 		return "Question [questionId=" + questionId + ", questionOptions=" + Arrays.toString(questionOptions)
 		+ ", questionTitle=" + questionTitle + ", questionAnswer=" + questionAnswer + ", questionMarks="
-		+ questionMarks + ", chosenAnswer=" + chosenAnswer + ", marksScored=" + marksScored + ", testId=" + "]";
+		+ questionMarks + ", chosenAnswer=" + chosenAnswer + ", marksScored=" + marksScored + ", isDeleted=" + isDeleted + "]";
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -238,19 +239,19 @@ public class TestManagementController {
 		}
 	}
 
-	@RequestMapping(value = "assigntest", method = RequestMethod.GET)
-	public String showAssignTest() {
-		return "AssignTest";
-	}
+//	@RequestMapping(value = "assigntest", method = RequestMethod.GET)
+//	public String showAssignTest() {
+//		return "AssignTest";
+//	}
 
-	@RequestMapping(value = "assigntestsubmit", method = RequestMethod.POST)
-	public String assignTest(@RequestParam("testid") long testId, @RequestParam("userid") long userId) {
+	@PostMapping(value = "assigntestsubmit")
+	public ResponseEntity<?> assignTest(@RequestParam("testid") long testId, @RequestParam("userid") long userId) {
 		try {
 			testservice.assignTest(userId, testId);
+			return new ResponseEntity<String>("Test assigned successfully!", HttpStatus.OK);
 		} catch (UserException e) {
-			System.out.println(e.getMessage());
+			return new ResponseEntity<String>("Test could not be assigned!", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return "admin";
 	}
 
 	@RequestMapping(value = "/getresult", method = RequestMethod.GET)
@@ -273,10 +274,10 @@ public class TestManagementController {
 
 
 
-	@RequestMapping(value = "/updatetest", method = RequestMethod.GET)
-	public String showUpdateTest() {
-		return "UpdateTest";
-	}
+//	@RequestMapping(value = "/updatetest", method = RequestMethod.GET)
+//	public String showUpdateTest() {
+//		return "UpdateTest";
+//	}
 
 	@GetMapping(value = "/updatetestinput")
 	public ResponseEntity<?> updateTest(@RequestParam("testid") long id) {
@@ -419,18 +420,25 @@ public class TestManagementController {
 		return "admin";
 	}
 
-	@RequestMapping(value = "/listquestion", method = RequestMethod.GET)
-	public String showListQuestion() {
-		return "ListQuestion";
-	}
+//	@RequestMapping(value = "/listquestion", method = RequestMethod.GET)
+//	public String showListQuestion() {
+//		return "ListQuestion";
+//	}
 
 	@RequestMapping(value = "/listquestionsubmit", method = RequestMethod.POST)
-	public ModelAndView submitListQuestion(@RequestParam("testId") long testId) {
+	public ResponseEntity<?> submitListQuestion(@RequestParam("testId") long testId) {
 		try {
 			OnlineTest test = testservice.searchTest(testId);
-			return new ModelAndView("ListQuestion", "questiondata", test.getTestQuestions());
+			List<Long> qlist = new ArrayList<Long>();
+			Set<Question> questions = test.getTestQuestions();
+			questions.forEach(question->{
+				if(question.getIsDeleted()!=true) {
+					qlist.add(question.getQuestionId());
+				}
+			});
+			return new ResponseEntity<List<Long>>(qlist, HttpStatus.OK);
 		} catch (UserException e) {
-			return new ModelAndView("ListQuestion", "error", "Test doesn't exist");
+			return new ResponseEntity<String>("No Questions found!", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
