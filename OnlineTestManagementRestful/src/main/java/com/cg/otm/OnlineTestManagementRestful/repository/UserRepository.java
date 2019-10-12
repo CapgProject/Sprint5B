@@ -7,5 +7,5 @@ import com.cg.otm.OnlineTestManagementRestful.dto.User;
 public interface UserRepository extends JpaRepository<User, Long>{
 	
 	public User findByUserId(Long userId);
-
+	public User findByUserName(String username);
 }

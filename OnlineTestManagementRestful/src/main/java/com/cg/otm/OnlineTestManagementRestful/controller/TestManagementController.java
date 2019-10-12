@@ -180,7 +180,7 @@ public class TestManagementController {
 //	}
 
 	/*Mapping for the page after form is submitted*/
-	@PostMapping(value = "removequestionsubmit")
+	@DeleteMapping(value = "removequestionsubmit")
 	public ResponseEntity<?> removeQuestion(@RequestParam("questionid") long id) {
 		Question deletedQuestion;
 		try {
@@ -315,31 +315,31 @@ public class TestManagementController {
 	}
 
 
-	@RequestMapping(value = "/updatequestion", method = RequestMethod.GET)
-	public String showUpdateQuestion(@ModelAttribute("question") Question question) {
-		return "UpdateQuestion";
-	}
+//	@RequestMapping(value = "/updatequestion", method = RequestMethod.GET)
+//	public String showUpdateQuestion(@ModelAttribute("question") Question question) {
+//		return "UpdateQuestion";
+//	}
 
-	@RequestMapping(value = "/updatequestioninput", method = RequestMethod.POST)
-	public ModelAndView updateQuestion(@RequestParam("questionid") long id,
+	@GetMapping(value = "/updatequestioninput")
+	public ResponseEntity<?> updateQuestion(@RequestParam("questionid") long id,
 			@ModelAttribute("question") Question question) {
 		Question questionOne;
 		try {
 			questionOne = testservice.searchQuestion(id);
-			return new ModelAndView("UpdateQuestion", "Update", questionOne);
+			return new ResponseEntity<String>(questionOne.toString(), HttpStatus.OK);
 		} catch (UserException e) {
-			System.out.println(e.getMessage());
+			return new ResponseEntity<String>("Question not found!", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ModelAndView("admin");
 	}
 
-	@RequestMapping(value = "/updatequestionsubmit", method = RequestMethod.POST)
-	public String actualUpdate(@RequestParam("testId") long testid, @ModelAttribute("question") Question question) {
+	@PostMapping(value = "/updatequestionsubmit")
+	public ResponseEntity<?> actualUpdate(@RequestParam("testId") long testid, @ModelAttribute("question") Question question) {
 
 		OnlineTest test;
+		Question questionOne;
 		try {
 			test = testservice.searchTest(testid);
-			Question questionOne = new Question();
+			questionOne = new Question();
 			questionOne.setQuestionId(question.getQuestionId());
 			questionOne.setQuestionTitle(question.getQuestionTitle());
 			questionOne.setQuestionOptions(question.getQuestionOptions());
@@ -350,10 +350,10 @@ public class TestManagementController {
 			questionOne.setMarksScored(new Double(0));
 			questionOne.setOnlinetest(test);
 			testservice.updateQuestion(testid, question.getQuestionId(), questionOne);
-		} catch (UserException e1) {
-			System.out.println(e1.getMessage());
+		} catch (UserException e) {
+			return new ResponseEntity<String>("Question could not be updated!", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return "admin";
+		return new ResponseEntity<String>(questionOne.toString(), HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/updateuser", method = RequestMethod.GET)
@@ -425,7 +425,7 @@ public class TestManagementController {
 //		return "ListQuestion";
 //	}
 
-	@RequestMapping(value = "/listquestionsubmit", method = RequestMethod.POST)
+	@GetMapping(value = "/listquestionsubmit")
 	public ResponseEntity<?> submitListQuestion(@RequestParam("testId") long testId) {
 		try {
 			OnlineTest test = testservice.searchTest(testId);
