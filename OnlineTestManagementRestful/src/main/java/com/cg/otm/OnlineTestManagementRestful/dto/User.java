@@ -24,14 +24,9 @@ public class User {
 	private Long userId;
 
 	@Column(name = "user_name")
-	@NotEmpty(message = "Username cannot be empty!")
-	@Size(min = 3, max = 15, message = "Username must be between 3 and 15 characters long!")
-	@Pattern(regexp = "^[A-Z][A-Za-z 0-9_-]*$", message = "Username must start with a capital letter!")
 	private String userName;
 
 	@Column(name = "user_password")
-	//@Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\\\d)(?=.*[@$!%*?&])[A-Za-z\\\\d@$!%*?&]{8,}$", message = "Password should contain at least one upper case character, one lower case character, one numeric character and one special character!")
-	@Size(min = 8, message = "Password should be atleast 8 characters long!")
 	private String userPassword;
 
 	@OneToOne(cascade = CascadeType.PERSIST)
@@ -45,7 +40,7 @@ public class User {
 	private Boolean isDeleted;
 
 	public User() {
-		super();
+		
 	}
 
 	public User(Long userId, String userName, String userPassword, OnlineTest userTest, Boolean isAdmin) {
