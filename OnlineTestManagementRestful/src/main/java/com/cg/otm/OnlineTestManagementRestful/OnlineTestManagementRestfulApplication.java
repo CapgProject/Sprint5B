@@ -8,6 +8,8 @@ public class OnlineTestManagementRestfulApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(OnlineTestManagementRestfulApplication.class, args);
+		
+		System.out.println("Welcome..!!");
 	}
 
 }

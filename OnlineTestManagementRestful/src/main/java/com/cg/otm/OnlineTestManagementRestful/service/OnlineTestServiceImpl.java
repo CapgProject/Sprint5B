@@ -41,8 +41,12 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 	
 	@Autowired
 	UserRepository userRepository;
-	
-	 //Method to register a user.
+
+    
+
+	/* Method to register a user.
+	 * Author<Priya>
+	 */
     
 	@Override
 	public User registerUser(User user) throws UserException {
@@ -236,12 +240,13 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 	@Override
 	public User updateProfile(User user) throws UserException {
 
-		User returnedUser = userRepository.findById(user.getUserId()).orElse(null);
+		User returnedUser = userRepository.save(user);
 		if (returnedUser == null) {
 			throw new UserException(ExceptionMessage.USERMESSAGE);
 		}
 		return returnedUser;
 	}
+
 	 //Method to get the list of all Users.
      
 	@Override
@@ -274,7 +279,7 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 	
 	@Override
 	public void readFromExcel(long id, String fileName, long time) throws IOException, UserException {
-		String UPLOAD_DIRECTORY = "E:\\Excel_Files";
+		String UPLOAD_DIRECTORY = "C:\\\\Users\\\\Administrator\\\\Desktop";
 		File dataFile = new File(UPLOAD_DIRECTORY + "\\" + time + fileName);
 		FileInputStream fis = new FileInputStream(dataFile);
 		XSSFWorkbook workbook = new XSSFWorkbook(fis);
