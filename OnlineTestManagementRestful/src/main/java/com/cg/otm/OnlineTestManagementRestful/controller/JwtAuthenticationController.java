@@ -2,6 +2,7 @@
  * 
  */
 package com.cg.otm.OnlineTestManagementRestful.controller;
+import java.util.ArrayList;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,9 +50,8 @@ public class JwtAuthenticationController {
 
 		final UserDetails userDetails = userDetailsService
 				.loadUserByUsername(authenticationRequest.getUsername());
-
 		final String token = jwtTokenUtil.generateToken(userDetails);
-
+		
 		return ResponseEntity.ok(new JwtResponse(token));
 	}
 	
@@ -61,7 +62,8 @@ public class JwtAuthenticationController {
 
 	private void authenticate(String username, String password) throws Exception {
 		try {
-			authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password, new ArrayList<GrantedAuthority>());
+			authenticationManager.authenticate(token);
 		} catch (DisabledException e) {
 			throw new Exception("USER_DISABLED", e);
 		} catch (BadCredentialsException e) {

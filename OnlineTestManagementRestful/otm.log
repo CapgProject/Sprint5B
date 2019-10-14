@@ -1,0 +1,230 @@
+2019-10-14 13:02:00,433 INFO com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] Starting OnlineTestManagementRestfulApplication on DESKTOP-JJSBQSR with PID 7284 (C:\Users\Admin\git\Sprint5B\OnlineTestManagementRestful\target\classes started by Admin in C:\Users\Admin\git\Sprint5B\OnlineTestManagementRestful)
+2019-10-14 13:02:00,436 DEBUG com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] Running with Spring Boot v2.1.9.RELEASE, Spring v5.1.10.RELEASE
+2019-10-14 13:02:00,437 INFO com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] No active profile set, falling back to default profiles: default
+2019-10-14 13:02:02,166 INFO org.apache.catalina.core.StandardService [main] Starting service [Tomcat]
+2019-10-14 13:02:02,168 INFO org.apache.catalina.core.StandardEngine [main] Starting Servlet engine: [Apache Tomcat/9.0.26]
+2019-10-14 13:02:02,453 INFO org.apache.jasper.servlet.TldScanner [main] At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2019-10-14 13:02:02,460 INFO org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] [main] Initializing Spring embedded WebApplicationContext
+2019-10-14 13:02:02,703 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2019-10-14 13:02:02,888 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2019-10-14 13:02:02,966 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+2019-10-14 13:02:03,203 INFO org.hibernate.Version [main] HHH000412: Hibernate Core {5.3.12.Final}
+2019-10-14 13:02:03,207 INFO org.hibernate.cfg.Environment [main] HHH000206: hibernate.properties not found
+2019-10-14 13:02:03,365 INFO org.hibernate.annotations.common.Version [main] HCANN000001: Hibernate Commons Annotations {5.0.4.Final}
+2019-10-14 13:02:03,529 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2019-10-14 13:02:05,133 DEBUG com.cg.otm.OnlineTestManagementRestful.config.JwtRequestFilter [main] Filter 'jwtRequestFilter' configured for use
+2019-10-14 13:02:05,311 INFO org.hibernate.hql.internal.QueryTranslatorFactoryInitiator [main] HHH000397: Using ASTQueryTranslatorFactory
+2019-10-14 13:02:06,073 ERROR org.apache.catalina.util.LifecycleBase [main] Failed to start component [Connector[HTTP/1.1-9088]]
+org.apache.catalina.LifecycleException: Protocol handler start failed
+	at org.apache.catalina.connector.Connector.startInternal(Connector.java:1008)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:183)
+	at org.apache.catalina.core.StandardService.addConnector(StandardService.java:227)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.addPreviouslyRemovedConnectors(TomcatWebServer.java:263)
+	at org.springframework.boot.web.embedded.tomcat.TomcatWebServer.start(TomcatWebServer.java:195)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.startWebServer(ServletWebServerApplicationContext.java:297)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.finishRefresh(ServletWebServerApplicationContext.java:163)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:552)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:141)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:744)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:391)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:312)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1215)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1204)
+	at com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication.main(OnlineTestManagementRestfulApplication.java:10)
+Caused by: java.net.BindException: Address already in use: bind
+	at sun.nio.ch.Net.bind0(Native Method)
+	at sun.nio.ch.Net.bind(Net.java:433)
+	at sun.nio.ch.Net.bind(Net.java:425)
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:223)
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:74)
+	at org.apache.tomcat.util.net.NioEndpoint.initServerSocket(NioEndpoint.java:230)
+	at org.apache.tomcat.util.net.NioEndpoint.bind(NioEndpoint.java:213)
+	at org.apache.tomcat.util.net.AbstractEndpoint.bindWithCleanup(AbstractEndpoint.java:1124)
+	at org.apache.tomcat.util.net.AbstractEndpoint.start(AbstractEndpoint.java:1210)
+	at org.apache.coyote.AbstractProtocol.start(AbstractProtocol.java:585)
+	at org.apache.catalina.connector.Connector.startInternal(Connector.java:1005)
+	... 14 common frames omitted
+2019-10-14 13:02:06,093 INFO org.apache.catalina.core.StandardService [main] Stopping service [Tomcat]
+2019-10-14 13:02:06,100 WARN org.apache.catalina.loader.WebappClassLoaderBase [main] The web application [ROOT] appears to have started a thread named [HikariPool-1 housekeeper] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ sun.misc.Unsafe.park(Native Method)
+ java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:215)
+ java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:2078)
+ java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:1093)
+ java.util.concurrent.ScheduledThreadPoolExecutor$DelayedWorkQueue.take(ScheduledThreadPoolExecutor.java:809)
+ java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1074)
+ java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1134)
+ java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+ java.lang.Thread.run(Thread.java:748)
+2019-10-14 13:02:06,101 WARN org.apache.catalina.loader.WebappClassLoaderBase [main] The web application [ROOT] appears to have started a thread named [HikariPool-1 connection adder] but has failed to stop it. This is very likely to create a memory leak. Stack trace of thread:
+ sun.misc.Unsafe.park(Native Method)
+ java.util.concurrent.locks.LockSupport.parkNanos(LockSupport.java:215)
+ java.util.concurrent.locks.AbstractQueuedSynchronizer$ConditionObject.awaitNanos(AbstractQueuedSynchronizer.java:2078)
+ java.util.concurrent.LinkedBlockingQueue.poll(LinkedBlockingQueue.java:467)
+ java.util.concurrent.ThreadPoolExecutor.getTask(ThreadPoolExecutor.java:1073)
+ java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1134)
+ java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+ java.lang.Thread.run(Thread.java:748)
+2019-10-14 13:02:06,116 ERROR org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter [main] 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The Tomcat connector configured to listen on port 9088 failed to start. The port may already be in use or the connector may be misconfigured.
+
+Action:
+
+Verify the connector's configuration, identify and stop any process that's listening on port 9088, or configure this application to listen on another port.
+
+2019-10-14 13:02:06,125 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Shutdown initiated...
+2019-10-14 13:02:06,130 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Shutdown completed.
+2019-10-14 13:02:38,032 INFO com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] Starting OnlineTestManagementRestfulApplication on DESKTOP-JJSBQSR with PID 6452 (C:\Users\Admin\git\Sprint5B\OnlineTestManagementRestful\target\classes started by Admin in C:\Users\Admin\git\Sprint5B\OnlineTestManagementRestful)
+2019-10-14 13:02:38,035 DEBUG com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] Running with Spring Boot v2.1.9.RELEASE, Spring v5.1.10.RELEASE
+2019-10-14 13:02:38,036 INFO com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] No active profile set, falling back to default profiles: default
+2019-10-14 13:02:39,691 INFO org.apache.catalina.core.StandardService [main] Starting service [Tomcat]
+2019-10-14 13:02:39,693 INFO org.apache.catalina.core.StandardEngine [main] Starting Servlet engine: [Apache Tomcat/9.0.26]
+2019-10-14 13:02:39,963 INFO org.apache.jasper.servlet.TldScanner [main] At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2019-10-14 13:02:39,969 INFO org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] [main] Initializing Spring embedded WebApplicationContext
+2019-10-14 13:02:40,189 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2019-10-14 13:02:40,329 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2019-10-14 13:02:40,388 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+2019-10-14 13:02:40,579 INFO org.hibernate.Version [main] HHH000412: Hibernate Core {5.3.12.Final}
+2019-10-14 13:02:40,581 INFO org.hibernate.cfg.Environment [main] HHH000206: hibernate.properties not found
+2019-10-14 13:02:40,730 INFO org.hibernate.annotations.common.Version [main] HCANN000001: Hibernate Commons Annotations {5.0.4.Final}
+2019-10-14 13:02:40,885 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2019-10-14 13:02:42,496 DEBUG com.cg.otm.OnlineTestManagementRestful.config.JwtRequestFilter [main] Filter 'jwtRequestFilter' configured for use
+2019-10-14 13:02:42,685 INFO org.hibernate.hql.internal.QueryTranslatorFactoryInitiator [main] HHH000397: Using ASTQueryTranslatorFactory
+2019-10-14 13:02:43,437 INFO com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] Started OnlineTestManagementRestfulApplication in 5.849 seconds (JVM running for 6.588)
+2019-10-14 13:03:04,429 INFO org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] [http-nio-9088-exec-2] Initializing Spring DispatcherServlet 'dispatcherServlet'
+2019-10-14 13:03:27,208 ERROR org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/].[dispatcherServlet] [http-nio-9088-exec-3] Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception
+org.springframework.dao.IncorrectResultSizeDataAccessException: query did not return a unique result: 2; nested exception is javax.persistence.NonUniqueResultException: query did not return a unique result: 2
+	at org.springframework.orm.jpa.EntityManagerFactoryUtils.convertJpaAccessExceptionIfPossible(EntityManagerFactoryUtils.java:385)
+	at org.springframework.orm.jpa.vendor.HibernateJpaDialect.translateExceptionIfPossible(HibernateJpaDialect.java:256)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.translateExceptionIfPossible(AbstractEntityManagerFactoryBean.java:528)
+	at org.springframework.dao.support.ChainedPersistenceExceptionTranslator.translateExceptionIfPossible(ChainedPersistenceExceptionTranslator.java:61)
+	at org.springframework.dao.support.DataAccessUtils.translateIfNecessary(DataAccessUtils.java:242)
+	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:153)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.data.jpa.repository.support.CrudMethodMetadataPostProcessor$CrudMethodMetadataPopulatingMethodInterceptor.invoke(CrudMethodMetadataPostProcessor.java:144)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.data.jpa.repository.support.CrudMethodMetadataPostProcessor$ExposeRepositoryInvocationInterceptor.invoke(CrudMethodMetadataPostProcessor.java:364)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.aop.interceptor.ExposeInvocationInterceptor.invoke(ExposeInvocationInterceptor.java:93)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.data.repository.core.support.SurroundingTransactionDetectorMethodInterceptor.invoke(SurroundingTransactionDetectorMethodInterceptor.java:61)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.aop.framework.JdkDynamicAopProxy.invoke(JdkDynamicAopProxy.java:212)
+	at com.sun.proxy.$Proxy101.findByUserName(Unknown Source)
+	at com.cg.otm.OnlineTestManagementRestful.service.JwtUserDetailsService.loadUserByUsername(JwtUserDetailsService.java:46)
+	at com.cg.otm.OnlineTestManagementRestful.config.JwtRequestFilter.doFilterInternal(JwtRequestFilter.java:60)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:74)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:215)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:178)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:358)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:271)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:94)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:202)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:526)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:139)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:408)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:860)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1589)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: javax.persistence.NonUniqueResultException: query did not return a unique result: 2
+	at org.hibernate.internal.ExceptionConverterImpl.convert(ExceptionConverterImpl.java:128)
+	at org.hibernate.query.internal.AbstractProducedQuery.getSingleResult(AbstractProducedQuery.java:1561)
+	at org.hibernate.query.criteria.internal.compile.CriteriaQueryTypeQueryAdapter.getSingleResult(CriteriaQueryTypeQueryAdapter.java:109)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.springframework.orm.jpa.SharedEntityManagerCreator$DeferredQueryInvocationHandler.invoke(SharedEntityManagerCreator.java:404)
+	at com.sun.proxy.$Proxy120.getSingleResult(Unknown Source)
+	at org.springframework.data.jpa.repository.query.JpaQueryExecution$SingleEntityExecution.doExecute(JpaQueryExecution.java:221)
+	at org.springframework.data.jpa.repository.query.JpaQueryExecution.execute(JpaQueryExecution.java:91)
+	at org.springframework.data.jpa.repository.query.AbstractJpaQuery.doExecute(AbstractJpaQuery.java:136)
+	at org.springframework.data.jpa.repository.query.AbstractJpaQuery.execute(AbstractJpaQuery.java:125)
+	at org.springframework.data.repository.core.support.RepositoryFactorySupport$QueryExecutorMethodInterceptor.doInvoke(RepositoryFactorySupport.java:605)
+	at org.springframework.data.repository.core.support.RepositoryFactorySupport$QueryExecutorMethodInterceptor.lambda$invoke$3(RepositoryFactorySupport.java:595)
+	at org.springframework.data.repository.core.support.RepositoryFactorySupport$QueryExecutorMethodInterceptor.invoke(RepositoryFactorySupport.java:595)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.data.projection.DefaultMethodInvokingMethodInterceptor.invoke(DefaultMethodInvokingMethodInterceptor.java:59)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.transaction.interceptor.TransactionAspectSupport.invokeWithinTransaction(TransactionAspectSupport.java:295)
+	at org.springframework.transaction.interceptor.TransactionInterceptor.invoke(TransactionInterceptor.java:98)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.dao.support.PersistenceExceptionTranslationInterceptor.invoke(PersistenceExceptionTranslationInterceptor.java:139)
+	... 63 common frames omitted
+2019-10-14 13:03:50,282 WARN com.cg.otm.OnlineTestManagementRestful.config.JwtRequestFilter [http-nio-9088-exec-4] JWT Token does not begin with Bearer String
+2019-10-14 13:05:00,209 WARN com.cg.otm.OnlineTestManagementRestful.config.JwtRequestFilter [http-nio-9088-exec-7] JWT Token does not begin with Bearer String
+2019-10-14 13:07:57,314 WARN com.cg.otm.OnlineTestManagementRestful.config.JwtRequestFilter [http-nio-9088-exec-3] JWT Token does not begin with Bearer String
+2019-10-14 13:08:33,259 INFO com.cg.otm.OnlineTestManagementRestful.controller.TestManagementController [http-nio-9088-exec-4] Entered Give test method
+2019-10-14 13:08:33,281 INFO com.cg.otm.OnlineTestManagementRestful.controller.TestManagementController [http-nio-9088-exec-4] Dispayed 1st question successflly
+2019-10-14 13:41:12,716 INFO com.zaxxer.hikari.HikariDataSource [RMI TCP Connection(2)-127.0.0.1] HikariPool-1 - Shutdown initiated...
+2019-10-14 13:41:12,722 INFO com.zaxxer.hikari.HikariDataSource [RMI TCP Connection(2)-127.0.0.1] HikariPool-1 - Shutdown completed.
+2019-10-14 13:42:18,550 INFO com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] Starting OnlineTestManagementRestfulApplication on DESKTOP-JJSBQSR with PID 1276 (C:\Users\Admin\git\Sprint5B\OnlineTestManagementRestful\target\classes started by Admin in C:\Users\Admin\git\Sprint5B\OnlineTestManagementRestful)
+2019-10-14 13:42:18,554 DEBUG com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] Running with Spring Boot v2.1.9.RELEASE, Spring v5.1.10.RELEASE
+2019-10-14 13:42:18,555 INFO com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] No active profile set, falling back to default profiles: default
+2019-10-14 13:42:21,030 INFO org.apache.catalina.core.StandardService [main] Starting service [Tomcat]
+2019-10-14 13:42:21,032 INFO org.apache.catalina.core.StandardEngine [main] Starting Servlet engine: [Apache Tomcat/9.0.26]
+2019-10-14 13:42:21,452 INFO org.apache.jasper.servlet.TldScanner [main] At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2019-10-14 13:42:21,460 INFO org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] [main] Initializing Spring embedded WebApplicationContext
+2019-10-14 13:42:21,789 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2019-10-14 13:42:22,018 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2019-10-14 13:42:22,101 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+2019-10-14 13:42:22,323 INFO org.hibernate.Version [main] HHH000412: Hibernate Core {5.3.12.Final}
+2019-10-14 13:42:22,325 INFO org.hibernate.cfg.Environment [main] HHH000206: hibernate.properties not found
+2019-10-14 13:42:22,467 INFO org.hibernate.annotations.common.Version [main] HCANN000001: Hibernate Commons Annotations {5.0.4.Final}
+2019-10-14 13:42:22,679 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2019-10-14 13:42:24,240 DEBUG com.cg.otm.OnlineTestManagementRestful.config.JwtRequestFilter [main] Filter 'jwtRequestFilter' configured for use
+2019-10-14 13:42:24,383 INFO org.hibernate.hql.internal.QueryTranslatorFactoryInitiator [main] HHH000397: Using ASTQueryTranslatorFactory
+2019-10-14 13:42:25,162 INFO com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] Started OnlineTestManagementRestfulApplication in 7.183 seconds (JVM running for 8.269)
+2019-10-14 13:43:20,946 INFO org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] [http-nio-9088-exec-2] Initializing Spring DispatcherServlet 'dispatcherServlet'
+2019-10-14 13:43:20,983 WARN com.cg.otm.OnlineTestManagementRestful.config.JwtRequestFilter [http-nio-9088-exec-2] JWT Token does not begin with Bearer String
+2019-10-14 13:44:06,177 INFO com.cg.otm.OnlineTestManagementRestful.controller.TestManagementController [http-nio-9088-exec-5] Entered Give test method
+2019-10-14 13:44:06,230 INFO com.cg.otm.OnlineTestManagementRestful.controller.TestManagementController [http-nio-9088-exec-5] Dispayed 1st question successflly

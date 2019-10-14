@@ -15,7 +15,6 @@ public interface OnlineTestService {
 	public Question updateQuestion(Long testId, Long questionId, Question question) throws UserException;
 	public Question deleteQuestion(Long testId, Long questionId) throws UserException;
 	public User registerUser(User user) throws UserException;
-	public Boolean answerQuestion(OnlineTest onlineTest, Question question, Integer chosenAnswer) throws UserException;
 	public Question showQuestion(OnlineTest onlineTest, Long questionId) throws UserException;
 	public Question searchQuestion(Long questionId) throws UserException;
 	public Boolean assignTest(Long userId, Long testId) throws UserException;

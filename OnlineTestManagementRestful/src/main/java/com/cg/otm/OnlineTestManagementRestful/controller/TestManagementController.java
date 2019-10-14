@@ -14,6 +14,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -44,20 +46,16 @@ public class TestManagementController {
 	@Autowired 
 	OnlineTestService testservice;
 
+	private static final Logger logger = LoggerFactory.getLogger(TestManagementController.class);
 	private static int num = 0;
 
-	/*Mapping for the home page*/
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String displayHomePage(@ModelAttribute("user") User user) {
-		return "home";
-	}
 
-//	/*Mapping for the page to display add test form*/
-//	@GetMapping(value = "/addtest")
-//	public String showAddTest() {
-//		return "AddTest";
-//	}
-
+	/*
+	 * Author: Piyush Daswani 
+	 * Description: This method takes all the test details from admin and then set those details and add the test in database 
+	 * Input: A test object having all details taken as input in AddTest page 
+	 * Return: Return an appropriate message
+	 */
 	/*Mapping for the page to display after add test form is submitted*/
 	@PostMapping(value = "/addtest")
 	public ResponseEntity<String> addTest(@ModelAttribute("test") OnlineTest test) {
@@ -80,55 +78,36 @@ public class TestManagementController {
 		return new ResponseEntity<String>(testOne.toString(),HttpStatus.OK);
 	}
 
-//	/*Mapping for the page to display add question form*/
-//	@RequestMapping(value = "/addquestion", method = RequestMethod.GET)
-//	public String showAddQuestion(@ModelAttribute("question") Question question) {
-//		return "AddQuestion";
-//	}
-
-	/*Mapping for the page to display after add question form is submitted*/
+	/*
+	 * Author: Swanand Pande 
+	 * Description: This method takes test id as input and then takes the excel file and if file is properly validated then it is transferred to Excel_Files folder and then request is passed to service layer
+	 * Input: An excel file containing questions and the test id in which questions are to be added 
+	 * Return: Return an appropriate message
+	 */
 	@PostMapping(value = "/addquestionsubmit")
 	public ResponseEntity<String> addQuestion(@RequestParam("testid") long id, @RequestParam("exfile") MultipartFile file) {
 		try {
 			String UPLOAD_DIRECTORY = "E:\\Excel_Files";
 			String fileName = file.getOriginalFilename();
 			File pathFile = new File(UPLOAD_DIRECTORY);
-			if (!pathFile.exists()) {
+			if (!pathFile.exists()) {  //If the given path does not exist then create the directory
 				pathFile.mkdir();
 			}
 
 			long time = new Date().getTime();
-			pathFile = new File(UPLOAD_DIRECTORY + "\\" + time + fileName);
-			file.transferTo(pathFile);
+			pathFile = new File(UPLOAD_DIRECTORY + "\\" + time + fileName); //appending time to filename so that files cannot have same name
+			file.transferTo(pathFile);    //Transfer the file to the given path
 			testservice.readFromExcel(id, fileName, time);
 		} catch (UserException | IOException e) {
 			return new ResponseEntity<String>("Data could not be added!", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<String>("Data Added Successfully!", HttpStatus.OK);
 	}
-
-	/*Mapping for the page to display add user form*/
-	@RequestMapping(value = "/adduser", method = RequestMethod.GET)
-	public String showAddUser(@ModelAttribute("user") User user) {
-		return "AddUser";
-	}
-
-	/*Mapping for the page to display after add user form is submitted*/
-	@RequestMapping(value = "/addusersubmit",method=RequestMethod.POST)
-	public String addUser(@ModelAttribute("user") User user) {
-		try {
-			user.setUserTest(null);
-			user.setIsAdmin(false);
-			user.setIsDeleted(false);
-			user.setUserTest(null);
-			testservice.registerUser(user);
-		} catch (UserException e) {
-			System.out.println(e.getMessage());
-		}
-		return "home";
-	}
 	
-	/*Mapping for the table to display all tests*/
+	/*
+	 * Author: Piyush Daswani
+	 * Description: This is a mapping to display all the tests which are not deleted and not assigned
+	 */
 	@RequestMapping(value = "/showalltests", method = RequestMethod.GET)
 	public ResponseEntity<List<OnlineTest>> showTest() {
 		List<OnlineTest> testList = testservice.getTests();
@@ -147,16 +126,13 @@ public class TestManagementController {
 		return new ModelAndView("ShowUser", "userdata", userList);
 	}
 	
-	
 
-
-	/*Mapping for the form to take input of test to be deleted*/
-	@RequestMapping(value = "/removetest", method = RequestMethod.GET)
-	public String showRemoveTest() {
-		return "RemoveTest";
-	}
-
-	/*Mapping for the page after form is submitted*/
+	/*
+	 * Author: Piyush Daswani
+	 * Description: This method searches the test with given test Id and if the test is found then delete the test
+	 * Input: Test Id of the test to be deleted
+	 * Return: Return an appropriate message
+	 */
 	@DeleteMapping(value = "removetestsubmit")
 	public ResponseEntity<?> removeTest(@RequestParam("testid") long id) {
 		try {
@@ -173,13 +149,12 @@ public class TestManagementController {
 		}
 	}
 
-//	/*Mapping for the form to take input of question to be deleted*/
-//	@RequestMapping(value = "/removequestion", method = RequestMethod.GET)
-//	public String showRemoveQuestion() {
-//		return "RemoveQuestion";
-//	}
-
-	/*Mapping for the page after form is submitted*/
+	/*
+	 * Author: Swanand Pande
+	 * Description: This method searches the question with given question Id and if the question is found then delete the question
+	 * Input: Question Id of the question to be deleted
+	 * Return: Return an appropriate message
+	 */
 	@DeleteMapping(value = "removequestionsubmit")
 	public ResponseEntity<?> removeQuestion(@RequestParam("questionid") long id) {
 		Question deletedQuestion;
@@ -192,58 +167,86 @@ public class TestManagementController {
 		return new ResponseEntity<String>(deletedQuestion.toString(), HttpStatus.OK);
 	}
 
-	/*Mapping for the page where the user can give test and see the first question*/
-	@RequestMapping(value = "/givetest", method = RequestMethod.GET)
-	public ModelAndView showQuestion(HttpSession session, @ModelAttribute("Question") Question question) {
-		User currentUser = (User) session.getAttribute("user");
-		ModelAndView mav = new ModelAndView("GiveTest");
-
-		if (currentUser.getUserTest() == null) {
-			mav.addObject("heading", "No Test Assigned Yet");
-			return mav;
-		} else {
-			mav.addObject("heading", currentUser.getUserTest().getTestName());
-			if (currentUser.getUserTest().getTestQuestions().toArray().length < num) {
-				return new ModelAndView("user");
-			}
-			mav.addObject("questions", currentUser.getUserTest().getTestQuestions().toArray()[num]);
-			num++;
-			return mav;
-		}
-	}
-
-	/*Mapping to display questions one at a time*/
-	@RequestMapping(value = "/givetest", method = RequestMethod.POST)
-	public ModelAndView submitQuestion(HttpSession session, @ModelAttribute("Question") Question question) {
-		User currentUser = (User) session.getAttribute("user");
-		ModelAndView mav = new ModelAndView("GiveTest");
-		Question quest = (Question) currentUser.getUserTest().getTestQuestions().toArray()[num - 1];
-		quest.setChosenAnswer(question.getChosenAnswer());
-		System.out.println(quest);
+	/*
+	 * Author: Piyush Daswani 
+	 * Description: This Method is used to show the first question of the test 
+	 * Input: user id
+	 * Return: First Question
+	 */
+	@GetMapping(value = "/givetest")
+	public ResponseEntity<?> showQuestion(@RequestParam("userid") long userId) {
+		logger.info("Entered Give test method");
+		User currentUser;
 		try {
-			System.out.println(
-					testservice.updateQuestion(quest.getOnlinetest().getTestId(), quest.getQuestionId(), quest));
-
-			mav.addObject("heading", currentUser.getUserTest().getTestName());
-			if (num >= currentUser.getUserTest().getTestQuestions().toArray().length) {
-				num = 0;
-				return new ModelAndView("user");
+			currentUser = testservice.searchUser(userId);
+			if (currentUser.getUserTest() == null) {
+				logger.info("No Test was assigned");
+				return new ResponseEntity<String>("No Test Assigned", HttpStatus.BAD_REQUEST);
 			} else {
-				mav.addObject("questions", currentUser.getUserTest().getTestQuestions().toArray()[num]);
-				num++;
-				return mav;
+				if (num < currentUser.getUserTest().getTestQuestions().toArray().length) {
+					num++;
+					logger.info("Dispayed 1st question successflly");
+					return new ResponseEntity<String>(
+							currentUser.getUserTest().getTestQuestions().toArray()[num - 1].toString(), HttpStatus.OK);
+
+				} else {
+					num = 0;
+					logger.info("Test didn't contain any questions");
+					return new ResponseEntity<String>("No Questions in the test", HttpStatus.NO_CONTENT);
+				}
 			}
+
 		} catch (UserException e) {
-			e.printStackTrace();
-			return new ModelAndView("user");
+			logger.error(e.getMessage());
+			return new ResponseEntity<String>("User id was incorrect", HttpStatus.NO_CONTENT);
 		}
 	}
 
-//	@RequestMapping(value = "assigntest", method = RequestMethod.GET)
-//	public String showAssignTest() {
-//		return "AssignTest";
-//	}
+	/*
+	 * Author: Piyush Daswani 
+	 * Description: This Method is used to add the chosen answer for a question and print the next question 
+	 * Input: user id
+	 * Return: First Question
+	 */
+	@PutMapping(value = "/givetest")
+	public ResponseEntity<?> submitQuestion(@RequestParam("userid") long userId, @RequestParam("questId") long questId, @RequestParam("chosenanswer") int chosenAnswer) {
+		logger.info("Entered Give test method");
+		User currentUser;
+		try {
+			currentUser = testservice.searchUser(userId);
+			if (currentUser.getUserTest() == null) {
+				logger.info("No Test was assigned");
+				return new ResponseEntity<String>("No Test Assigned", HttpStatus.BAD_REQUEST);
+			} else {
+				Question quest = (Question) currentUser.getUserTest().getTestQuestions().toArray()[num - 1];
+				quest.setChosenAnswer(chosenAnswer);
+				testservice.updateQuestion(currentUser.getUserTest().getTestId(), quest.getQuestionId(), quest);
+				if (num < currentUser.getUserTest().getTestQuestions().toArray().length) {
+					num++;
+					logger.info("Dispayed next question successflly");
+					return new ResponseEntity<String>(
+							currentUser.getUserTest().getTestQuestions().toArray()[num - 1].toString(), HttpStatus.OK);
 
+				} else {
+					num = 0;
+					logger.info("No more questions left");
+					return new ResponseEntity<String>("Test Complete", HttpStatus.OK);
+				}
+			}
+
+		} catch (UserException e) {
+			logger.error(e.getMessage());
+			return new ResponseEntity<String>("User id was incorrect", HttpStatus.NO_CONTENT);
+		}
+	}
+
+
+	/*
+	 * Author: Swanand Pande
+	 * Description: This Method is used to assign a test to the user
+	 * Input: Test Id to be assigned and User Id of user to whom test is to assigned
+	 * Return: Return an appropriate message
+	 */
 	@PostMapping(value = "assigntestsubmit")
 	public ResponseEntity<?> assignTest(@RequestParam("testid") long testId, @RequestParam("userid") long userId) {
 		try {
@@ -272,13 +275,12 @@ public class TestManagementController {
 
 	}
 
-
-
-//	@RequestMapping(value = "/updatetest", method = RequestMethod.GET)
-//	public String showUpdateTest() {
-//		return "UpdateTest";
-//	}
-
+	/*
+	 * Author: Piyush Daswani
+	 * Description: This method searches the test with given test Id and if the test is found then return the test details and show the UpdateTestDetails page included in UpdateTest page
+	 * Input: Test Id of the test to be deleted
+	 * Return: Return an appropriate message
+	 */
 	@GetMapping(value = "/updatetestinput")
 	public ResponseEntity<?> updateTest(@RequestParam("testid") long id) {
 		OnlineTest test;
@@ -291,6 +293,12 @@ public class TestManagementController {
 		}
 	}
 
+	/*
+	 * Author: Piyush Daswani
+	 * Description: This method sets the updated details in a test object and passes the details to service layer
+	 * Input: Test Id of the test to be updated and the object containing updated test details
+	 * Return: Return an appropriate message
+	 */
 	@PutMapping(value = "/updatetestinput")
 	public ResponseEntity<?> actualUpdate(@ModelAttribute("test") OnlineTest test) {
 		OnlineTest testOne = new OnlineTest();
@@ -314,12 +322,12 @@ public class TestManagementController {
 		}
 	}
 
-
-//	@RequestMapping(value = "/updatequestion", method = RequestMethod.GET)
-//	public String showUpdateQuestion(@ModelAttribute("question") Question question) {
-//		return "UpdateQuestion";
-//	}
-
+	/*
+	 * Author: Swanand Pande
+	 * Description: This method searches the question with given question Id and if the question is found then return the question details and show the UpdateQuestionDetails page included in UpdateQuestion page
+	 * Input: Question Id of the question to be updated
+	 * Return: Return an appropriate message
+	 */
 	@GetMapping(value = "/updatequestioninput")
 	public ResponseEntity<?> updateQuestion(@RequestParam("questionid") long id,
 			@ModelAttribute("question") Question question) {
@@ -332,7 +340,13 @@ public class TestManagementController {
 		}
 	}
 
-	@PostMapping(value = "/updatequestionsubmit")
+	/*
+	 * Author: Swanand Pande
+	 * Description: This method sets the updated details in a question object and passes the details to service layer
+	 * Input: Test Id of the test which contains the question to be updated and the object containing updated question details
+	 * Return: Return an appropriate message
+	 */
+	@PutMapping(value = "/updatequestionsubmit")
 	public ResponseEntity<?> actualUpdate(@RequestParam("testId") long testid, @ModelAttribute("question") Question question) {
 
 		OnlineTest test;
@@ -388,43 +402,12 @@ public class TestManagementController {
 		}
 	}
 
-	@RequestMapping(value = "/onlogin", method = RequestMethod.POST)
-	public String onLogin(@ModelAttribute("user") User user, HttpSession session) {
-		User foundUser = testservice.login(user.getUserName(), user.getUserPassword());
-		if (foundUser != null) {
-			session.setAttribute("user", foundUser);
-			if (foundUser.getIsAdmin()) {
-				return "admin";
-			} else {
-				return "user";
-			}
-		} else {
-			return "home";
-		}
-
-	}
-
-	@RequestMapping(value = "/logout", method = RequestMethod.GET)
-	public String onLogout(HttpSession session, @ModelAttribute("user") User user) {
-		session.invalidate();
-		return "home";
-	}
-
-	@RequestMapping(value = "user", method = RequestMethod.GET)
-	public String user() {
-		return "user";
-	}
-
-	@RequestMapping(value = "admin", method = RequestMethod.GET)
-	public String admin() {
-		return "admin";
-	}
-
-//	@RequestMapping(value = "/listquestion", method = RequestMethod.GET)
-//	public String showListQuestion() {
-//		return "ListQuestion";
-//	}
-
+	/*
+	 * Author: Swanand Pande
+	 * Description: This method displays all the questions which are present in a given test
+	 * Input: Test Id of the test whose questions are to be returned
+	 * Return: Return an appropriate message
+	 */
 	@GetMapping(value = "/listquestionsubmit")
 	public ResponseEntity<?> submitListQuestion(@RequestParam("testId") long testId) {
 		try {
