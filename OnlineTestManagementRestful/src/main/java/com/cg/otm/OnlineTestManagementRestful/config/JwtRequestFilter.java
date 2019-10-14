@@ -1,7 +1,7 @@
 package com.cg.otm.OnlineTestManagementRestful.config;
 /**
- * @author Swanand Pande
- *
+ * Author: Swanand Pande
+ * Description: Intercepts every request once and passes the credentials to authentication controller if its a new user and validates the token
  */
 import java.io.IOException;
 

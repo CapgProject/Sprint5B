@@ -1,5 +1,8 @@
 package com.cg.otm.OnlineTestManagementRestful.dto;
-
+/**
+ * Author: Piyush Daswani
+ * Description: Handling the user details for Spring Security
+ */
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

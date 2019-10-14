@@ -26,8 +26,8 @@ import com.cg.otm.OnlineTestManagementRestful.model.UserDTO;
 import com.cg.otm.OnlineTestManagementRestful.repository.UserRepository;
 
 /**
- * @author Swanand Pande
- *
+ * Author: Swanand Pande
+ * Description: Loads the Data from the database and saves the data into the database
  */
 @Service
 public class JwtUserDetailsService implements UserDetailsService{

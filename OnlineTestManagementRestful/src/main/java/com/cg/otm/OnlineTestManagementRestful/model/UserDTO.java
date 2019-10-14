@@ -4,8 +4,8 @@
 package com.cg.otm.OnlineTestManagementRestful.model;
 
 /**
- * @author Swanand Pande
- *
+ * Author: Swanand Pande
+ * Description: Takes the details for registeration
  */
 public class UserDTO {
 

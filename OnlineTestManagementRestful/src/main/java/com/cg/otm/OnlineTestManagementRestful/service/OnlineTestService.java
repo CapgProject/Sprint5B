@@ -25,7 +25,6 @@ public interface OnlineTestService {
 	public List<User> getUsers();
 	public List<OnlineTest> getTests();
 	public User updateProfile(User user) throws UserException;
-	public User login(String userName, String pass);
 	public void readFromExcel(long id, String fileName, long time) throws IOException, UserException;
 
 }

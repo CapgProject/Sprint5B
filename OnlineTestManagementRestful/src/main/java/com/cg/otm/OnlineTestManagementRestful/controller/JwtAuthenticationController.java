@@ -28,10 +28,9 @@ import com.cg.otm.OnlineTestManagementRestful.model.JwtRequest;
 import com.cg.otm.OnlineTestManagementRestful.model.JwtResponse;
 import com.cg.otm.OnlineTestManagementRestful.model.UserDTO;
 /**
- * @author Swanand Pande
- *
+ * Author: Swanand Pande
+ * Description: Mappings for authenticating and registering the user
  */
-
 @RestController
 @CrossOrigin
 public class JwtAuthenticationController {

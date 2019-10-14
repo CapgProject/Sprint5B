@@ -4,8 +4,8 @@
 package com.cg.otm.OnlineTestManagementRestful.config;
 
 /**
- * @author Swanand Pande
- *
+ * Author: Swanand Pande
+ * Description: Spring security configuration
  */
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

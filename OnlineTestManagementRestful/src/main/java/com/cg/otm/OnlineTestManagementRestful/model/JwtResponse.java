@@ -3,8 +3,8 @@ package com.cg.otm.OnlineTestManagementRestful.model;
 import java.io.Serializable;
 
 /**
- * @author Swanand Pande
- *
+ * Author: Swanand Pande
+ * Description: Return the JWT Token
  */
 public class JwtResponse implements Serializable {
 

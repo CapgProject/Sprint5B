@@ -1,7 +1,7 @@
 package com.cg.otm.OnlineTestManagementRestful.config;
 /**
- * @author Swanand Pande
- *
+ * Author: Swanand Pande
+ * Description: Check whether the entered credentials are valid or not
  */
 import java.io.IOException;
 import java.io.Serializable;

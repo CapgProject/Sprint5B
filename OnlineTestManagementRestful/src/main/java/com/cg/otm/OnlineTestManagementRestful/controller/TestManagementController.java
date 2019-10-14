@@ -1,5 +1,8 @@
 package com.cg.otm.OnlineTestManagementRestful.controller;
-
+/**
+ * Author: Swanand Pande, Piyush Daswani, Priya Kumari
+ * Description: Main controller for handling all the mappings
+ */
 import org.springframework.web.bind.annotation.RestController;
 import java.io.File;
 import java.io.IOException;
@@ -37,9 +40,6 @@ import com.cg.otm.OnlineTestManagementRestful.dto.Question;
 import com.cg.otm.OnlineTestManagementRestful.dto.User;
 import com.cg.otm.OnlineTestManagementRestful.exception.UserException;
 import com.cg.otm.OnlineTestManagementRestful.service.OnlineTestService;
-
-
-
 
 @RestController
 public class TestManagementController {

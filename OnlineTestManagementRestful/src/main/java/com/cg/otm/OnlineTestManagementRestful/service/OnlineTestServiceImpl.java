@@ -1,5 +1,8 @@
 package com.cg.otm.OnlineTestManagementRestful.service;
-
+/**
+ * Author: Swanand Pande,Piyush Daswani, Priya Kumari
+ * Description: Serice class for handling all the Business Layer logic
+ */
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,7 +23,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.cg.otm.OnlineTestManagementRestful.dao.OnlineTestDao;
 import com.cg.otm.OnlineTestManagementRestful.dto.OnlineTest;
 import com.cg.otm.OnlineTestManagementRestful.dto.Question;
 import com.cg.otm.OnlineTestManagementRestful.dto.User;
@@ -32,8 +34,6 @@ import com.cg.otm.OnlineTestManagementRestful.repository.UserRepository;
 @Service("testservice")
 @Transactional
 public class OnlineTestServiceImpl implements OnlineTestService{
-	@Autowired
-	OnlineTestDao testdao;
 	@Autowired
 	QuestionRepository questionRepository;
 	@Autowired
@@ -75,8 +75,8 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 
 	@Override
 	public Boolean assignTest(Long userId, Long testId) throws UserException {
-		User user = testdao.searchUser(userId);
-		OnlineTest onlineTest = testdao.searchTest(testId);
+		User user = userRepository.getOne(userId);
+		OnlineTest onlineTest = testRepository.findByTestId(testId);
 		if (user == null) {
 			throw new UserException(ExceptionMessage.USERMESSAGE);
 		}
@@ -92,8 +92,8 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 			user.setUserTest(onlineTest);
 			onlineTest.setIsTestAssigned(true);
 		}
-		testdao.updateTest(onlineTest);
-		testdao.updateUser(user);
+		testRepository.save(onlineTest);
+		userRepository.save(user);
 		return true;
 	}
 
@@ -225,7 +225,7 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 	public Double getResult(OnlineTest onlineTest) throws UserException {
 		Double score = calculateTotalMarks(onlineTest);
 		onlineTest.setIsTestAssigned(false);
-		testdao.updateTest(onlineTest);
+		testRepository.save(onlineTest);
 		return score;
 	}
 
@@ -242,7 +242,7 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 			score = score + question.getMarksScored();
 		}
 		onlineTest.setTestMarksScored(score);
-		testdao.updateTest(onlineTest);
+		testRepository.save(onlineTest);
 		return score;
 	}
 	
@@ -330,17 +330,6 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 		} else {
 			throw new UserException(ExceptionMessage.QUESTIONNOTFOUNDMESSAGE);
 		}
-	}
-
-	/*
-	 * Author: Piyush Daswani 
-	 * Description: This Method is used to return the user by username and password 
-	 * Input: username and password
-	 * Return: user object
-	 */
-	@Override
-	public User login(String userName, String pass) {
-		return testdao.login(userName, pass);
 	}
 
 	/*
