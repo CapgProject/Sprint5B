@@ -150,8 +150,8 @@ public class Question {
 	@Override
 	public String toString() {
 		return "Question [questionId=" + questionId + ", questionOptions=" + Arrays.toString(questionOptions)
-		+ ", questionTitle=" + questionTitle + ", questionAnswer=" + questionAnswer + ", questionMarks="
-		+ questionMarks + ", chosenAnswer=" + chosenAnswer + ", marksScored=" + marksScored + ", isDeleted=" + isDeleted + "]";
+		+ ", questionTitle=" + questionTitle + ", questionMarks="
+		+ questionMarks + ", marksScored=" + marksScored + ", isDeleted=" + isDeleted + "]";
 	}
 
 	@Override

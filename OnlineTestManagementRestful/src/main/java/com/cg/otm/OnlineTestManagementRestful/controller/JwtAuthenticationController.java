@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -22,6 +23,7 @@ import com.cg.otm.OnlineTestManagementRestful.service.JwtUserDetailsService;
 
 
 import com.cg.otm.OnlineTestManagementRestful.config.JwtTokenUtil;
+import com.cg.otm.OnlineTestManagementRestful.dto.User;
 import com.cg.otm.OnlineTestManagementRestful.model.JwtRequest;
 import com.cg.otm.OnlineTestManagementRestful.model.JwtResponse;
 import com.cg.otm.OnlineTestManagementRestful.model.UserDTO;
@@ -57,7 +59,12 @@ public class JwtAuthenticationController {
 	
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public ResponseEntity<?> saveUser(@RequestBody UserDTO user) throws Exception {
-		return ResponseEntity.ok(userDetailsService.save(user));
+		try {
+			User returnedUser = userDetailsService.save(user);
+			return new ResponseEntity<User>(returnedUser,HttpStatus.OK);
+		}catch(Exception e) {
+			return new ResponseEntity<String>("Same username not allowed",HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	private void authenticate(String username, String password) throws Exception {

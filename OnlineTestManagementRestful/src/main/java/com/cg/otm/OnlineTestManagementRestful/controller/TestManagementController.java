@@ -59,6 +59,7 @@ public class TestManagementController {
 	/*Mapping for the page to display after add test form is submitted*/
 	@PostMapping(value = "/addtest")
 	public ResponseEntity<String> addTest(@ModelAttribute("test") OnlineTest test) {
+		logger.info("Entered add test method");
 		OnlineTest testOne = new OnlineTest();
 		try {
 			Set<Question> question = new HashSet<Question>();
@@ -72,6 +73,7 @@ public class TestManagementController {
 			testOne.setIsTestAssigned(false);
 			testOne.setTestQuestions(question);
 			testservice.addTest(testOne);
+			logger.info("Test added successfully");
 		} catch (UserException e) {
 			return new ResponseEntity<String>("Data not added", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -87,6 +89,7 @@ public class TestManagementController {
 	@PostMapping(value = "/addquestionsubmit")
 	public ResponseEntity<String> addQuestion(@RequestParam("testid") long id, @RequestParam("exfile") MultipartFile file) {
 		try {
+			logger.info("Entered add question method");
 			String UPLOAD_DIRECTORY = "E:\\Excel_Files";
 			String fileName = file.getOriginalFilename();
 			File pathFile = new File(UPLOAD_DIRECTORY);
@@ -98,7 +101,9 @@ public class TestManagementController {
 			pathFile = new File(UPLOAD_DIRECTORY + "\\" + time + fileName); //appending time to filename so that files cannot have same name
 			file.transferTo(pathFile);    //Transfer the file to the given path
 			testservice.readFromExcel(id, fileName, time);
+			logger.info("Question added successfully");
 		} catch (UserException | IOException e) {
+			logger.error(e.getMessage());
 			return new ResponseEntity<String>("Data could not be added!", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<String>("Data Added Successfully!", HttpStatus.OK);
@@ -110,22 +115,38 @@ public class TestManagementController {
 	 */
 	@RequestMapping(value = "/showalltests", method = RequestMethod.GET)
 	public ResponseEntity<List<OnlineTest>> showTest() {
+		logger.info("Entered Show Test method");
 		List<OnlineTest> testList = testservice.getTests();
 		if(testList ==null) {
+			logger.info("No test Printed");
 			return new ResponseEntity<List<OnlineTest>>(HttpStatus.NO_CONTENT);
 		}
 		else {
+			logger.info("Test displayed successfully");
 			return new ResponseEntity<List<OnlineTest>>(testList, HttpStatus.OK);
 		}
 	}
 
-	/*Mapping for the table to display all users*/
-	@RequestMapping(value = "/showallusers",method=RequestMethod.GET)
-	public ModelAndView showUser() {
-		List<User> userList = testservice.getUsers();
-		return new ModelAndView("ShowUser", "userdata", userList);
-	}
+	/*
+	 * Author: Priya Kumari
+	 * Description: This Method is used to return a list of users.
+	 * Return: List of users
+	 */
 	
+	@GetMapping(value="/showusers")
+	public ResponseEntity<?> getAllUsers(){
+		logger.info("Entered Show User method");
+		List<User> userone=  testservice.getUsers();
+		if(userone.isEmpty()) {
+			logger.info("No users");
+			return new ResponseEntity<String>("No user details present",HttpStatus.BAD_REQUEST);
+			
+		}else {
+			logger.info("Users displayed successfully");
+			return new ResponseEntity<List<User>>(userone,HttpStatus.OK);
+		}
+		
+	}
 
 	/*
 	 * Author: Piyush Daswani
@@ -136,15 +157,19 @@ public class TestManagementController {
 	@DeleteMapping(value = "removetestsubmit")
 	public ResponseEntity<?> removeTest(@RequestParam("testid") long id) {
 		try {
+			logger.info("Entered remove test method");
 			OnlineTest deleteTest = testservice.searchTest(id);
 			OnlineTest deletedTest = testservice.deleteTest(deleteTest.getTestId());
 			if(deletedTest != null) {
+				logger.info("test deleted successfully");
 				return new ResponseEntity<OnlineTest>(deletedTest,HttpStatus.OK);
 			}
 			else {
-				return new ResponseEntity<String>("Something went wrong please try again later",HttpStatus.INTERNAL_SERVER_ERROR);
+				logger.info("Test id doesnt exist");
+				return new ResponseEntity<String>("test id doesnt exist",HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		} catch (UserException e) {
+			logger.error(e.getMessage());
 			return new ResponseEntity<String>("Test id doesnt exist", HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -157,11 +182,14 @@ public class TestManagementController {
 	 */
 	@DeleteMapping(value = "removequestionsubmit")
 	public ResponseEntity<?> removeQuestion(@RequestParam("questionid") long id) {
+		logger.info("Entered remove question method");
 		Question deletedQuestion;
 		try {
 			Question question = testservice.searchQuestion(id);
 			deletedQuestion = testservice.deleteQuestion(question.getOnlinetest().getTestId(), question.getQuestionId());
+			logger.info("Question deleted Successfully");
 		} catch (UserException e) {
+			logger.error(e.getMessage());
 			return new ResponseEntity<String>("Question could not be deleted!", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<String>(deletedQuestion.toString(), HttpStatus.OK);
@@ -250,30 +278,40 @@ public class TestManagementController {
 	@PostMapping(value = "assigntestsubmit")
 	public ResponseEntity<?> assignTest(@RequestParam("testid") long testId, @RequestParam("userid") long userId) {
 		try {
+			logger.info("Entered assign test method");
 			testservice.assignTest(userId, testId);
+			logger.info("Test assigned successfully");
 			return new ResponseEntity<String>("Test assigned successfully!", HttpStatus.OK);
+			
 		} catch (UserException e) {
+			logger.error(e.getMessage());
 			return new ResponseEntity<String>("Test could not be assigned!", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-
-	@RequestMapping(value = "/getresult", method = RequestMethod.GET)
-	public ModelAndView showGetResult(HttpSession session) {
-		User currentUser = (User) session.getAttribute("user");
-		OnlineTest test;
+	
+	
+	/*
+	 * Author: Priya Kumari 
+	 * Description: This method is used for returning the result of the assigned test for a given user
+	 * Input: User id for which result is to be checked
+	 * Output: The marks scored in the test
+	 */
+	@GetMapping(value="getresult")
+	public ResponseEntity<?> getResult(@RequestParam("userid") long userId){
 		try {
-			test = testservice.searchTest(currentUser.getUserTest().getTestId());
-			Double marksScored = test.getTestMarksScored();
-			test.setTestMarksScored(new Double(0.0));
-			return new ModelAndView("GetResult", "result", marksScored);
-
-		} catch (UserException e) {
-			// TODO Auto-generated catch block
-			System.out.println(e.getMessage());
-			return new ModelAndView("GetResult", "result", 0.0);
+			logger.info("Entered get result method");
+		User user=testservice.searchUser(userId);
+		OnlineTest test=testservice.searchTest(user.getUserTest().getTestId());
+		Double marksScored=test.getTestMarksScored();
+		logger.info("Result displayed successfully");
+		return new ResponseEntity<Double>(marksScored,HttpStatus.OK);
+			 
+		}catch(UserException e) {
+			logger.error(e.getMessage());
+			return new ResponseEntity<String>("Test details cannot be found", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
 	}
+	
 
 	/*
 	 * Author: Piyush Daswani
@@ -283,12 +321,13 @@ public class TestManagementController {
 	 */
 	@GetMapping(value = "/updatetestinput")
 	public ResponseEntity<?> updateTest(@RequestParam("testid") long id) {
+		
 		OnlineTest test;
 		try {
 			test = testservice.searchTest(id);
 			return new ResponseEntity<OnlineTest>(test,HttpStatus.OK);
 		} catch (UserException e) {
-			System.out.println(e.getMessage());
+			logger.error(e.getMessage());
 			return new ResponseEntity<String>("Test not found", HttpStatus.NO_CONTENT);
 		}
 	}
@@ -301,6 +340,7 @@ public class TestManagementController {
 	 */
 	@PutMapping(value = "/updatetestinput")
 	public ResponseEntity<?> actualUpdate(@ModelAttribute("test") OnlineTest test) {
+		logger.info("Entered update test method");
 		OnlineTest testOne = new OnlineTest();
 		Set<Question> questions = new HashSet<Question>();
 		testOne.setTestId(test.getTestId());
@@ -315,9 +355,10 @@ public class TestManagementController {
 		testOne.setIsTestAssigned(false);
 		try {
 			OnlineTest returnedTest = testservice.updateTest(test.getTestId(), testOne);
+			logger.info("Updated Test Successfully");
 			return new ResponseEntity<OnlineTest>(returnedTest, HttpStatus.OK);
 		} catch (UserException e) {
-			System.out.println(e.getMessage());
+			logger.error(e.getMessage());
 			return new ResponseEntity<String>("The test wasnt updated due to some error", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -336,6 +377,7 @@ public class TestManagementController {
 			questionOne = testservice.searchQuestion(id);
 			return new ResponseEntity<String>(questionOne.toString(), HttpStatus.OK);
 		} catch (UserException e) {
+			logger.error(e.getMessage());
 			return new ResponseEntity<String>("Question not found!", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -348,7 +390,7 @@ public class TestManagementController {
 	 */
 	@PutMapping(value = "/updatequestionsubmit")
 	public ResponseEntity<?> actualUpdate(@RequestParam("testId") long testid, @ModelAttribute("question") Question question) {
-
+		logger.info("Entered Update question method");
 		OnlineTest test;
 		Question questionOne;
 		try {
@@ -364,41 +406,56 @@ public class TestManagementController {
 			questionOne.setMarksScored(new Double(0));
 			questionOne.setOnlinetest(test);
 			testservice.updateQuestion(testid, question.getQuestionId(), questionOne);
+			logger.info("question updated successfully");
 		} catch (UserException e) {
+			logger.error(e.getMessage());
 			return new ResponseEntity<String>("Question could not be updated!", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<String>(questionOne.toString(), HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/updateuser", method = RequestMethod.GET)
-	public ModelAndView showUpdateUser(@ModelAttribute("user") User user, HttpSession session) {
-		User originalUser = (User) session.getAttribute("user");
-		if (originalUser.getIsAdmin()) {
-			return new ModelAndView("UpdateAdminDetails", "Update", session.getAttribute("user"));
-		}
-		else {
-			return new ModelAndView("UpdateUserDetails", "Update", session.getAttribute("user"));
+	/*
+	 * Author: Priya Kumari
+	 * Description: This Method is used to get the details of a user whose details we want to update
+	 * Return: User Detail
+	 */
+	@GetMapping(value = "/updateuser")
+	public ResponseEntity<?> updateUser(@RequestParam("userid") long id) {
+		User user;
+		try {
+			
+			user = testservice.searchUser(id);
+			return new ResponseEntity<User>(user ,HttpStatus.OK);
+		} catch (UserException e) {
+			logger.error(e.getMessage());
+			return new ResponseEntity<String>("User not found", HttpStatus.NO_CONTENT);
 		}
 	}
 
-	@RequestMapping(value = "/updateusersubmit", method = RequestMethod.POST)
-	public String actualUpdate(@ModelAttribute("user") User user, HttpSession session) {
-		User originalUser = (User) session.getAttribute("user");
-		try {
-			User userOne = testservice.searchUser(user.getUserId());
-			userOne.setUserName(user.getUserName());
-			userOne.setUserPassword(user.getUserPassword());
-			userOne.setIsDeleted(false);
 
-			userOne.setIsAdmin(originalUser.getIsAdmin());
-			testservice.updateProfile(userOne);
+//
+	/*
+	 * Author: Priya Kumari
+	 * Description: This Method is used to update the details of  user
+	 * Return: User Details
+	 */
+	
+	@PutMapping(value = "/updateuser")
+	public ResponseEntity<?> updateUser(@ModelAttribute("user") User user) {
+		logger.info("Entered update user method");
+		User userOne =new User();
+		userOne.setUserName(user.getUserName());
+		userOne.setUserPassword(user.getUserPassword());
+		userOne.setUserTest(null);
+		userOne.setIsAdmin(false);
+		userOne.setIsDeleted(false);
+		try {
+			User userReturned=testservice.updateProfile(user);
+			logger.info("User successfully updated");			
+			return new ResponseEntity<User>(userReturned, HttpStatus.OK);
 		} catch (UserException e) {
-			System.out.println(e.getMessage());
-		}
-		if (originalUser.getIsAdmin()) {
-			return "admin";
-		} else {
-			return "user";
+			logger.error(e.getMessage());
+			return new ResponseEntity<String>("User details cannnot be updated due to some error", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -411,6 +468,7 @@ public class TestManagementController {
 	@GetMapping(value = "/listquestionsubmit")
 	public ResponseEntity<?> submitListQuestion(@RequestParam("testId") long testId) {
 		try {
+			logger.info("Entered List question method");
 			OnlineTest test = testservice.searchTest(testId);
 			List<Long> qlist = new ArrayList<Long>();
 			Set<Question> questions = test.getTestQuestions();
@@ -419,8 +477,10 @@ public class TestManagementController {
 					qlist.add(question.getQuestionId());
 				}
 			});
+			logger.info("Successfully displayed list of questions");
 			return new ResponseEntity<List<Long>>(qlist, HttpStatus.OK);
 		} catch (UserException e) {
+			logger.error(e.getMessage());
 			return new ResponseEntity<String>("No Questions found!", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
