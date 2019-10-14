@@ -589,3 +589,45 @@ java.sql.SQLIntegrityConstraintViolationException: Duplicate entry 'User21' for 
 2019-10-14 15:59:23,942 INFO com.cg.otm.OnlineTestManagementRestful.controller.TestManagementController [http-nio-9088-exec-2] Dispayed 1st question successflly
 2019-10-14 16:59:44,526 INFO com.zaxxer.hikari.HikariDataSource [RMI TCP Connection(2)-127.0.0.1] HikariPool-1 - Shutdown initiated...
 2019-10-14 16:59:44,532 INFO com.zaxxer.hikari.HikariDataSource [RMI TCP Connection(2)-127.0.0.1] HikariPool-1 - Shutdown completed.
+2019-10-14 18:17:45,063 INFO com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] Starting OnlineTestManagementRestfulApplication on DESKTOP-0OD3OKN with PID 4068 (C:\Users\Admin\git\Sprint5B\OnlineTestManagementRestful\target\classes started by Admin in C:\Users\Admin\git\Sprint5B\OnlineTestManagementRestful)
+2019-10-14 18:17:45,065 DEBUG com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] Running with Spring Boot v2.1.9.RELEASE, Spring v5.1.10.RELEASE
+2019-10-14 18:17:45,066 INFO com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] No active profile set, falling back to default profiles: default
+2019-10-14 18:17:46,257 INFO org.apache.catalina.core.StandardService [main] Starting service [Tomcat]
+2019-10-14 18:17:46,267 INFO org.apache.catalina.core.StandardEngine [main] Starting Servlet engine: [Apache Tomcat/9.0.26]
+2019-10-14 18:17:46,472 INFO org.apache.jasper.servlet.TldScanner [main] At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2019-10-14 18:17:46,472 INFO org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] [main] Initializing Spring embedded WebApplicationContext
+2019-10-14 18:17:46,629 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2019-10-14 18:17:46,735 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2019-10-14 18:17:46,858 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+2019-10-14 18:17:46,911 INFO org.hibernate.Version [main] HHH000412: Hibernate Core {5.3.12.Final}
+2019-10-14 18:17:46,913 INFO org.hibernate.cfg.Environment [main] HHH000206: hibernate.properties not found
+2019-10-14 18:17:47,018 INFO org.hibernate.annotations.common.Version [main] HCANN000001: Hibernate Commons Annotations {5.0.4.Final}
+2019-10-14 18:17:47,132 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2019-10-14 18:17:48,912 DEBUG com.cg.otm.OnlineTestManagementRestful.config.JwtRequestFilter [main] Filter 'jwtRequestFilter' configured for use
+2019-10-14 18:17:48,996 INFO org.hibernate.hql.internal.QueryTranslatorFactoryInitiator [main] HHH000397: Using ASTQueryTranslatorFactory
+2019-10-14 18:17:49,603 INFO com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] Started OnlineTestManagementRestfulApplication in 4.851 seconds (JVM running for 5.43)
+2019-10-14 18:19:07,021 INFO org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] [http-nio-9088-exec-2] Initializing Spring DispatcherServlet 'dispatcherServlet'
+2019-10-14 18:20:08,478 INFO com.zaxxer.hikari.HikariDataSource [RMI TCP Connection(2)-127.0.0.1] HikariPool-1 - Shutdown initiated...
+2019-10-14 18:20:08,494 INFO com.zaxxer.hikari.HikariDataSource [RMI TCP Connection(2)-127.0.0.1] HikariPool-1 - Shutdown completed.
+2019-10-14 18:20:20,628 INFO com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] Starting OnlineTestManagementRestfulApplication on DESKTOP-0OD3OKN with PID 808 (C:\Users\Admin\git\Sprint5B\OnlineTestManagementRestful\target\classes started by Admin in C:\Users\Admin\git\Sprint5B\OnlineTestManagementRestful)
+2019-10-14 18:20:20,642 DEBUG com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] Running with Spring Boot v2.1.9.RELEASE, Spring v5.1.10.RELEASE
+2019-10-14 18:20:20,642 INFO com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] No active profile set, falling back to default profiles: default
+2019-10-14 18:20:21,853 INFO org.apache.catalina.core.StandardService [main] Starting service [Tomcat]
+2019-10-14 18:20:21,854 INFO org.apache.catalina.core.StandardEngine [main] Starting Servlet engine: [Apache Tomcat/9.0.26]
+2019-10-14 18:20:22,063 INFO org.apache.jasper.servlet.TldScanner [main] At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2019-10-14 18:20:22,068 INFO org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] [main] Initializing Spring embedded WebApplicationContext
+2019-10-14 18:20:22,217 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2019-10-14 18:20:22,319 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2019-10-14 18:20:22,437 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+2019-10-14 18:20:22,477 INFO org.hibernate.Version [main] HHH000412: Hibernate Core {5.3.12.Final}
+2019-10-14 18:20:22,477 INFO org.hibernate.cfg.Environment [main] HHH000206: hibernate.properties not found
+2019-10-14 18:20:22,587 INFO org.hibernate.annotations.common.Version [main] HCANN000001: Hibernate Commons Annotations {5.0.4.Final}
+2019-10-14 18:20:22,696 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2019-10-14 18:20:23,881 DEBUG com.cg.otm.OnlineTestManagementRestful.config.JwtRequestFilter [main] Filter 'jwtRequestFilter' configured for use
+2019-10-14 18:20:23,968 INFO org.hibernate.hql.internal.QueryTranslatorFactoryInitiator [main] HHH000397: Using ASTQueryTranslatorFactory
+2019-10-14 18:20:24,556 INFO com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] Started OnlineTestManagementRestfulApplication in 4.297 seconds (JVM running for 4.964)
+2019-10-14 18:20:39,607 INFO org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] [http-nio-9088-exec-2] Initializing Spring DispatcherServlet 'dispatcherServlet'

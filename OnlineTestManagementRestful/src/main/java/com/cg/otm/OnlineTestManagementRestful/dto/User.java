@@ -1,16 +1,28 @@
 package com.cg.otm.OnlineTestManagementRestful.dto;
 
+import java.util.Date;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
+@EntityListeners({AuditingEntityListener.class})
 @Table(name = "user")
 public class User {
 
@@ -35,6 +47,16 @@ public class User {
 	@Column(name = "is_deleted")
 	private Boolean isDeleted;
 
+	@CreatedBy
+	protected String createdBy;
+	@CreatedDate
+	@Temporal(TemporalType.TIMESTAMP)
+	protected Date creationDate;
+	@LastModifiedBy
+	protected String lastModifiedBy;
+	@LastModifiedDate
+	@Temporal(TemporalType.TIMESTAMP)
+	protected Date lastModifiedDate;
 	public User() {
 		
 	}
