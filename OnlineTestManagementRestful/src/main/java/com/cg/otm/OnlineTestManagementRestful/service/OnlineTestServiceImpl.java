@@ -75,7 +75,7 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 
 	@Override
 	public Boolean assignTest(Long userId, Long testId) throws UserException {
-		User user = userRepository.getOne(userId);
+		User user = userRepository.findByUserId(userId);
 		OnlineTest onlineTest = testRepository.findByTestId(testId);
 		if (user == null) {
 			throw new UserException(ExceptionMessage.USERMESSAGE);
