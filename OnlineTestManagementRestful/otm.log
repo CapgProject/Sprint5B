@@ -718,3 +718,30 @@ java.lang.NullPointerException: null
 2019-10-20 22:15:28,709 WARN com.cg.otm.OnlineTestManagementRestful.config.JwtRequestFilter [http-nio-9088-exec-6] JWT Token does not begin with Bearer String
 2019-10-20 22:15:28,713 INFO com.cg.otm.OnlineTestManagementRestful.controller.TestManagementController [http-nio-9088-exec-6] Entered assign test method
 2019-10-20 22:15:28,745 INFO com.cg.otm.OnlineTestManagementRestful.controller.TestManagementController [http-nio-9088-exec-6] Test assigned successfully
+2019-10-21 22:23:35,023 INFO com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] Starting OnlineTestManagementRestfulApplication on DESKTOP-CR3KAV0 with PID 14028 (C:\Users\piyus\git\Sprint5B\OnlineTestManagementRestful\target\classes started by Piyush in C:\Users\piyus\git\Sprint5B\OnlineTestManagementRestful)
+2019-10-21 22:23:35,027 DEBUG com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] Running with Spring Boot v2.1.9.RELEASE, Spring v5.1.10.RELEASE
+2019-10-21 22:23:35,027 INFO com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] No active profile set, falling back to default profiles: default
+2019-10-21 22:23:39,841 INFO org.apache.catalina.core.StandardService [main] Starting service [Tomcat]
+2019-10-21 22:23:39,842 INFO org.apache.catalina.core.StandardEngine [main] Starting Servlet engine: [Apache Tomcat/9.0.26]
+2019-10-21 22:23:40,387 INFO org.apache.jasper.servlet.TldScanner [main] At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2019-10-21 22:23:40,395 INFO org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] [main] Initializing Spring embedded WebApplicationContext
+2019-10-21 22:23:40,855 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2019-10-21 22:23:41,510 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2019-10-21 22:23:41,704 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+2019-10-21 22:23:42,090 INFO org.hibernate.Version [main] HHH000412: Hibernate Core {5.3.12.Final}
+2019-10-21 22:23:42,093 INFO org.hibernate.cfg.Environment [main] HHH000206: hibernate.properties not found
+2019-10-21 22:23:42,683 INFO org.hibernate.annotations.common.Version [main] HCANN000001: Hibernate Commons Annotations {5.0.4.Final}
+2019-10-21 22:23:43,020 INFO org.hibernate.dialect.Dialect [main] HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2019-10-21 22:23:45,986 DEBUG com.cg.otm.OnlineTestManagementRestful.config.JwtRequestFilter [main] Filter 'jwtRequestFilter' configured for use
+2019-10-21 22:23:46,184 INFO org.hibernate.hql.internal.QueryTranslatorFactoryInitiator [main] HHH000397: Using ASTQueryTranslatorFactory
+2019-10-21 22:23:47,472 INFO com.cg.otm.OnlineTestManagementRestful.OnlineTestManagementRestfulApplication [main] Started OnlineTestManagementRestfulApplication in 13.778 seconds (JVM running for 15.799)
+2019-10-21 22:36:40,606 INFO org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/] [http-nio-9088-exec-2] Initializing Spring DispatcherServlet 'dispatcherServlet'
+2019-10-21 22:36:40,760 WARN com.cg.otm.OnlineTestManagementRestful.config.JwtRequestFilter [http-nio-9088-exec-2] JWT Token does not begin with Bearer String
+2019-10-21 22:36:40,941 INFO com.cg.otm.OnlineTestManagementRestful.controller.TestManagementController [http-nio-9088-exec-2] Entered add question method
+2019-10-21 22:36:43,057 INFO com.cg.otm.OnlineTestManagementRestful.controller.TestManagementController [http-nio-9088-exec-2] Question added successfully
+2019-10-21 22:36:56,942 WARN com.cg.otm.OnlineTestManagementRestful.config.JwtRequestFilter [http-nio-9088-exec-3] JWT Token does not begin with Bearer String
+2019-10-21 22:37:03,689 WARN com.cg.otm.OnlineTestManagementRestful.config.JwtRequestFilter [http-nio-9088-exec-4] JWT Token does not begin with Bearer String
+2019-10-21 22:37:03,701 INFO com.cg.otm.OnlineTestManagementRestful.controller.TestManagementController [http-nio-9088-exec-4] Entered Give test method
+2019-10-21 22:37:03,779 INFO com.cg.otm.OnlineTestManagementRestful.controller.TestManagementController [http-nio-9088-exec-4] Dispayed 1st question successflly
