@@ -1,30 +1,23 @@
 package com.cg.otm.OnlineTestManagementRestful.controller;
+
 /**
  * Author: Swanand Pande, Piyush Daswani, Priya Kumari
  * Description: Main controller for handling all the mappings
  */
-import org.springframework.web.bind.annotation.RestController;
 import java.io.File;
 import java.io.IOException;
-
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.servlet.http.HttpSession;
-
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,8 +28,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.cg.otm.OnlineTestManagementRestful.dto.AssignTestData;
 import com.cg.otm.OnlineTestManagementRestful.dto.OnlineTest;
@@ -95,7 +89,7 @@ public class TestManagementController {
 	public ResponseEntity<String> addQuestion(@RequestParam("testid") long id, @RequestParam("exfile") MultipartFile file) {
 		try {
 			logger.info("Entered add question method");
-			String UPLOAD_DIRECTORY = "E:\\Excel_Files";
+			String UPLOAD_DIRECTORY = "D:\\Excel_Files";
 			String fileName = file.getOriginalFilename();
 			File pathFile = new File(UPLOAD_DIRECTORY);
 			if (!pathFile.exists()) {  //If the given path does not exist then create the directory
@@ -147,8 +141,14 @@ public class TestManagementController {
 			return new ResponseEntity<String>("No user details present",HttpStatus.BAD_REQUEST);
 			
 		}else {
+			List<User> returnedList = new ArrayList<User>();
+			userone.forEach(user->{
+				if(user.getIsDeleted() == false && user.getIsAdmin() == false && user.getUserTest() == null) {
+					returnedList.add(user);
+				}
+			});
 			logger.info("Users displayed successfully");
-			return new ResponseEntity<List<User>>(userone,HttpStatus.OK);
+			return new ResponseEntity<List<User>>(returnedList,HttpStatus.OK);
 		}
 		
 	}
@@ -216,14 +216,26 @@ public class TestManagementController {
 				logger.info("No Test was assigned");
 				return new ResponseEntity<String>("No Test Assigned", HttpStatus.BAD_REQUEST);
 			} else {
-				if (num < currentUser.getUserTest().getTestQuestions().toArray().length) {
-					num++;
-					logger.info("Dispayed 1st question successflly");
-					return new ResponseEntity<String>(
-							currentUser.getUserTest().getTestQuestions().toArray()[num - 1].toString(), HttpStatus.OK);
-
+				Set<Question> questions =new HashSet<Question>();
+				if (0 < currentUser.getUserTest().getTestQuestions().toArray().length) {
+					logger.info("Sent all questions");
+					currentUser.getUserTest().getTestQuestions().forEach(quest->{
+						Question addQuestion = new Question();
+						addQuestion.setQuestionId(quest.getQuestionId());
+						OnlineTest test = quest.getOnlinetest();
+						test.setTestQuestions(null);
+						addQuestion.setOnlinetest(test);
+						addQuestion.setQuestionAnswer(quest.getQuestionAnswer());
+						addQuestion.setIsDeleted(false);
+						addQuestion.setQuestionMarks(quest.getQuestionMarks());
+						addQuestion.setMarksScored(0.0);
+						addQuestion.setChosenAnswer(0);
+						addQuestion.setQuestionOptions(quest.getQuestionOptions());
+						addQuestion.setQuestionTitle(quest.getQuestionTitle());
+						questions.add(addQuestion);
+					});
+					return new ResponseEntity<Set<Question>>(questions, HttpStatus.OK);
 				} else {
-					num = 0;
 					logger.info("Test didn't contain any questions");
 					return new ResponseEntity<String>("No Questions in the test", HttpStatus.NO_CONTENT);
 				}
@@ -428,7 +440,6 @@ public class TestManagementController {
 	public ResponseEntity<?> updateUser(@RequestParam("userid") long id) {
 		User user;
 		try {
-			
 			user = testservice.searchUser(id);
 			return new ResponseEntity<User>(user ,HttpStatus.OK);
 		} catch (UserException e) {
@@ -448,22 +459,23 @@ public class TestManagementController {
 	@PutMapping(value = "/updateuser")
 	public ResponseEntity<?> updateUser(@ModelAttribute("user") User user) {
 		logger.info("Entered update user method");
-		User userOne =new User();
-		userOne.setUserName(user.getUserName());
-		userOne.setUserPassword(user.getUserPassword());
-		userOne.setUserTest(null);
-		userOne.setIsAdmin(false);
-		userOne.setIsDeleted(false);
+		User userOne;
 		try {
-			User userReturned=testservice.updateProfile(user);
-			logger.info("User successfully updated");			
-			return new ResponseEntity<User>(userReturned, HttpStatus.OK);
-		} catch (UserException e) {
+			userOne = testservice.searchUser(user.getUserId());
+			userOne.setUserName(user.getUserName());
+			userOne.setUserPassword(user.getUserPassword());
+			userOne.setIsDeleted(false);
+
+				User userReturned=testservice.updateProfile(user);
+				logger.info("User successfully updated");			
+				return new ResponseEntity<User>(userReturned, HttpStatus.OK);
+		}
+		catch(UserException e) {
 			logger.error(e.getMessage());
 			return new ResponseEntity<String>("User details cannnot be updated due to some error", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-
+	
 	/*
 	 * Author: Swanand Pande
 	 * Description: This method displays all the questions which are present in a given test

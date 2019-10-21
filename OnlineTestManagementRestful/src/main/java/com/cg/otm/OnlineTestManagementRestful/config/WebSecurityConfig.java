@@ -63,9 +63,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.authorizeRequests()
 				.antMatchers("/addtest", "/addquestionsubmit", "/showalltests", "/showallusers", "/removetestsubmit",
 						"/removequestionsubmit", "/assigntestsubmit", "/updatetestinput", "/updatequestioninput",
-						"/updatequestionsubmit", "/listquestionsubmit").permitAll()
-				.antMatchers("/givetest", "/getresult").permitAll()
-				.antMatchers("/authenticate", "/register", "/updateusersubmit", "/updateuser").permitAll().
+						"/updatequestionsubmit", "/listquestionsubmit","/givetest", "/getresult","/authenticate", "/register", "/updateusersubmit", "/updateuser").permitAll().
+//				.antMatchers().permitAll()
+//				.antMatchers().permitAll().
 
 				// all other requests need to be authenticated
 				/*anyRequest().authenticated().*/and().
@@ -75,6 +75,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
 		// Add a filter to validate the tokens with every request
-		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+//		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 }
