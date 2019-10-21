@@ -254,35 +254,16 @@ public class TestManagementController {
 	 * Return: First Question
 	 */
 	@PutMapping(value = "/givetest")
-	public ResponseEntity<?> submitQuestion(@RequestParam("userid") long userId, @RequestParam("questId") long questId, @RequestParam("chosenanswer") int chosenAnswer) {
+	public ResponseEntity<?> submitQuestion(@RequestBody List<Question> questions) {
 		logger.info("Entered Give test method");
-		User currentUser;
-		try {
-			currentUser = testservice.searchUser(userId);
-			if (currentUser.getUserTest() == null) {
-				logger.info("No Test was assigned");
-				return new ResponseEntity<String>("No Test Assigned", HttpStatus.BAD_REQUEST);
-			} else {
-				Question quest = (Question) currentUser.getUserTest().getTestQuestions().toArray()[num - 1];
-				quest.setChosenAnswer(chosenAnswer);
-				testservice.updateQuestion(currentUser.getUserTest().getTestId(), quest.getQuestionId(), quest);
-				if (num < currentUser.getUserTest().getTestQuestions().toArray().length) {
-					num++;
-					logger.info("Dispayed next question successflly");
-					return new ResponseEntity<String>(
-							currentUser.getUserTest().getTestQuestions().toArray()[num - 1].toString(), HttpStatus.OK);
-
-				} else {
-					num = 0;
-					logger.info("No more questions left");
-					return new ResponseEntity<String>("Test Complete", HttpStatus.OK);
-				}
+		questions.forEach(quest->{
+			try {
+				testservice.updateQuestion(quest.getOnlinetest().getTestId(), quest.getQuestionId(),quest);
+			} catch (UserException e) {
+				logger.error(e.getMessage());
 			}
-
-		} catch (UserException e) {
-			logger.error(e.getMessage());
-			return new ResponseEntity<String>("User id was incorrect", HttpStatus.NO_CONTENT);
-		}
+		});
+		return new ResponseEntity<String>(JSONObject.quote("Test submitted Successfully"), HttpStatus.OK);
 	}
 
 
