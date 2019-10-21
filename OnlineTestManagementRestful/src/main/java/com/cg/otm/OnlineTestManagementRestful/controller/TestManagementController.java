@@ -84,6 +84,30 @@ public class TestManagementController {
 		}
 		return new ResponseEntity<String>(testOne.toString(),HttpStatus.OK);
 	}
+	
+	@PostMapping(value="/addsinglequestion")
+	public ResponseEntity<?> addSingleQuestion(@RequestParam("testid") long id, @ModelAttribute("question") Question question){
+		OnlineTest test;
+		try {
+			test = testservice.searchTest(id);
+			if(test != null) {
+				Question addQuestion = new Question();
+				addQuestion.setQuestionTitle(question.getQuestionTitle());
+				addQuestion.setQuestionOptions(question.getQuestionOptions());
+				addQuestion.setQuestionAnswer(question.getQuestionAnswer());
+				addQuestion.setIsDeleted(false);
+				addQuestion.setChosenAnswer(0);
+				addQuestion.setMarksScored(0.0);
+				addQuestion.setQuestionMarks(question.getQuestionMarks());
+				addQuestion.setOnlinetest(test);
+				testservice.addQuestion(id, addQuestion);
+				return new ResponseEntity<Question>(addQuestion, HttpStatus.OK);
+			}
+		} catch (UserException e) {
+			return new ResponseEntity<String>("Question could not be added", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<String>("Question could not be added", HttpStatus.INTERNAL_SERVER_ERROR); 
+	}
 
 	/*
 	 * Author: Swanand Pande 

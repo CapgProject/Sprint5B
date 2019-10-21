@@ -399,5 +399,23 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 		}
 		fis.close();
 	}
+	
+	@Override
+	public Question addQuestion(long id, Question question) throws UserException {
+		
+		OnlineTest test = testRepository.findByTestId(id);
+		if(test != null) {
+			Set<Question> questions = test.getTestQuestions();
+			questions.add(question);
+			test.setTestQuestions(questions);
+			test.setTestTotalMarks(test.getTestTotalMarks() + question.getQuestionMarks());
+			testRepository.save(test);
+			questionRepository.save(question);
+		}
+		else {
+			throw new UserException(ExceptionMessage.TESTNOTFOUNDMESSAGE);
+		}
+		return question;
+	}
 
 }
