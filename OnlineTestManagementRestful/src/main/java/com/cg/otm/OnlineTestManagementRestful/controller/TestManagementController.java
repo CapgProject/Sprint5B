@@ -84,6 +84,30 @@ public class TestManagementController {
 		}
 		return new ResponseEntity<String>(testOne.toString(),HttpStatus.OK);
 	}
+	
+	@PostMapping(value="/addsinglequestion")
+	public ResponseEntity<?> addSingleQuestion(@RequestParam("testid") long id, @ModelAttribute("question") Question question){
+		OnlineTest test;
+		try {
+			test = testservice.searchTest(id);
+			if(test != null) {
+				Question addQuestion = new Question();
+				addQuestion.setQuestionTitle(question.getQuestionTitle());
+				addQuestion.setQuestionOptions(question.getQuestionOptions());
+				addQuestion.setQuestionAnswer(question.getQuestionAnswer());
+				addQuestion.setIsDeleted(false);
+				addQuestion.setChosenAnswer(0);
+				addQuestion.setMarksScored(0.0);
+				addQuestion.setQuestionMarks(question.getQuestionMarks());
+				addQuestion.setOnlinetest(test);
+				testservice.addQuestion(id, addQuestion);
+				return new ResponseEntity<Question>(addQuestion, HttpStatus.OK);
+			}
+		} catch (UserException e) {
+			return new ResponseEntity<String>("Question could not be added", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<String>("Question could not be added", HttpStatus.INTERNAL_SERVER_ERROR); 
+	}
 
 	/*
 	 * Author: Swanand Pande 
@@ -91,7 +115,7 @@ public class TestManagementController {
 	 * Input: An excel file containing questions and the test id in which questions are to be added 
 	 * Return: Return an appropriate message
 	 */
-	@PostMapping(value = "/addquestionsubmit")
+	@PostMapping(value = "/addquestionsubmit", consumes = "multipart/form-data")
 	public ResponseEntity<String> addQuestion(@RequestParam("testid") long id, @RequestParam("exfile") MultipartFile file) {
 		try {
 			logger.info("Entered add question method");
@@ -370,36 +394,19 @@ public class TestManagementController {
 
 	/*
 	 * Author: Swanand Pande
-	 * Description: This method searches the question with given question Id and if the question is found then return the question details and show the UpdateQuestionDetails page included in UpdateQuestion page
-	 * Input: Question Id of the question to be updated
-	 * Return: Return an appropriate message
-	 */
-	@GetMapping(value = "/updatequestioninput")
-	public ResponseEntity<?> updateQuestion(@RequestParam("questionid") long id,
-			@ModelAttribute("question") Question question) {
-		Question questionOne;
-		try {
-			questionOne = testservice.searchQuestion(id);
-			return new ResponseEntity<String>(questionOne.toString(), HttpStatus.OK);
-		} catch (UserException e) {
-			logger.error(e.getMessage());
-			return new ResponseEntity<String>("Question not found!", HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-
-	/*
-	 * Author: Swanand Pande
 	 * Description: This method sets the updated details in a question object and passes the details to service layer
 	 * Input: Test Id of the test which contains the question to be updated and the object containing updated question details
 	 * Return: Return an appropriate message
 	 */
 	@PutMapping(value = "/updatequestionsubmit")
-	public ResponseEntity<?> actualUpdate(@RequestParam("testId") long testid, @ModelAttribute("question") Question question) {
+	public ResponseEntity<?> actualUpdate(@ModelAttribute("question") Question question) {
 		logger.info("Entered Update question method");
 		OnlineTest test;
 		Question questionOne;
 		try {
-			test = testservice.searchTest(testid);
+			OnlineTest searchtest = question.getOnlinetest();
+			System.out.println(searchtest.getTestId());
+			test = testservice.searchTest(searchtest.getTestId());
 			questionOne = new Question();
 			questionOne.setQuestionId(question.getQuestionId());
 			questionOne.setQuestionTitle(question.getQuestionTitle());
@@ -410,7 +417,7 @@ public class TestManagementController {
 			questionOne.setIsDeleted(false);
 			questionOne.setMarksScored(new Double(0));
 			questionOne.setOnlinetest(test);
-			testservice.updateQuestion(testid, question.getQuestionId(), questionOne);
+			testservice.updateQuestion(searchtest.getTestId(), question.getQuestionId(), questionOne);
 			logger.info("question updated successfully");
 		} catch (UserException e) {
 			logger.error(e.getMessage());
@@ -473,21 +480,56 @@ public class TestManagementController {
 	@GetMapping(value = "/listquestionsubmit")
 	public ResponseEntity<?> submitListQuestion(@RequestParam("testId") long testId) {
 		try {
-			logger.info("Entered List question method");
 			OnlineTest test = testservice.searchTest(testId);
 			List<Long> qlist = new ArrayList<Long>();
+			List<Question> questionList = new ArrayList<Question>();
 			Set<Question> questions = test.getTestQuestions();
 			questions.forEach(question->{
 				if(question.getIsDeleted()!=true) {
 					qlist.add(question.getQuestionId());
+					Question foundQuestion;
+					try {
+						foundQuestion = testservice.searchQuestion(question.getQuestionId());
+						Question newQuestion = new Question();
+						newQuestion.setQuestionId(foundQuestion.getQuestionId());
+						newQuestion.setQuestionTitle(foundQuestion.getQuestionTitle());
+						newQuestion.setQuestionOptions(foundQuestion.getQuestionOptions());
+						newQuestion.setQuestionMarks(foundQuestion.getQuestionMarks());
+						questionList.add(newQuestion);
+					} catch (UserException e) {
+						// TODO Auto-generated catch block
+						return;
+					}					
 				}
 			});
-			logger.info("Successfully displayed list of questions");
-			return new ResponseEntity<List<Long>>(qlist, HttpStatus.OK);
+			return new ResponseEntity<List<Question>>(questionList, HttpStatus.OK);
 		} catch (UserException e) {
-			logger.error(e.getMessage());
 			return new ResponseEntity<String>("No Questions found!", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
+	/*
+	 * Author: Swanand Pande
+	 * Description: This method searches the question with given question Id and if the question is found then return the question details and show the UpdateQuestionDetails page included in UpdateQuestion page
+	 * Input: Question Id of the question to be updated
+	 * Return: Return an appropriate message
+	 */
+	@GetMapping(value="/searchquestion")
+	public ResponseEntity<?> searchQuestion(@RequestParam("id") long id) {
+		try {
+			Question question = testservice.searchQuestion(id);
+			if(question != null) {
+				Question newQuestion = new Question();
+				newQuestion.setQuestionTitle(question.getQuestionTitle());
+				newQuestion.setQuestionOptions(question.getQuestionOptions());
+				newQuestion.setQuestionAnswer(question.getQuestionAnswer());
+				newQuestion.setQuestionMarks(question.getQuestionMarks());
+				newQuestion.setOnlinetest(question.getOnlinetest());
+				return new ResponseEntity<Question>(newQuestion, HttpStatus.OK);
+			}
+		} catch (UserException e) {
+			return new ResponseEntity<String>("Question not found!", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		return new ResponseEntity<String>("Question not found!", HttpStatus.INTERNAL_SERVER_ERROR);		
+	}
 }
