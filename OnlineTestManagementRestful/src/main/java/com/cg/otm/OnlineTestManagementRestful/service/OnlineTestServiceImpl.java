@@ -405,12 +405,12 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 		
 		OnlineTest test = testRepository.findByTestId(id);
 		if(test != null) {
+			questionRepository.save(question);
 			Set<Question> questions = test.getTestQuestions();
 			questions.add(question);
 			test.setTestQuestions(questions);
 			test.setTestTotalMarks(test.getTestTotalMarks() + question.getQuestionMarks());
 			testRepository.save(test);
-			questionRepository.save(question);
 		}
 		else {
 			throw new UserException(ExceptionMessage.TESTNOTFOUNDMESSAGE);
