@@ -89,6 +89,7 @@ public class TestManagementController {
 	public ResponseEntity<?> addSingleQuestion(@RequestParam("testid") long id, @ModelAttribute("question") Question question){
 		OnlineTest test;
 		try {
+			logger.info("Entered add single question method");
 			test = testservice.searchTest(id);
 			if(test != null) {
 				Question addQuestion = new Question();
@@ -101,12 +102,15 @@ public class TestManagementController {
 				addQuestion.setQuestionMarks(question.getQuestionMarks());
 				addQuestion.setOnlinetest(test);
 				testservice.addQuestion(id, addQuestion);
-				return new ResponseEntity<Question>(addQuestion, HttpStatus.OK);
+				logger.info("Question added Successfully");
+				return new ResponseEntity<String>(JSONObject.quote("Question added Successfully"), HttpStatus.OK);
 			}
 		} catch (UserException e) {
-			return new ResponseEntity<String>("Question could not be added", HttpStatus.INTERNAL_SERVER_ERROR);
+			logger.error(e.getMessage());
+			return new ResponseEntity<String>(JSONObject.quote(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<String>("Question could not be added", HttpStatus.INTERNAL_SERVER_ERROR); 
+		logger.error("Error in adding question");
+		return new ResponseEntity<String>(JSONObject.quote("Question could not be added"), HttpStatus.INTERNAL_SERVER_ERROR); 
 	}
 
 	/*
@@ -219,9 +223,9 @@ public class TestManagementController {
 			logger.info("Question deleted Successfully");
 		} catch (UserException e) {
 			logger.error(e.getMessage());
-			return new ResponseEntity<String>("Question could not be deleted!", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>(JSONObject.quote(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<String>(deletedQuestion.toString(), HttpStatus.OK);
+		return new ResponseEntity<String>(JSONObject.quote("Question deleted successfully!"), HttpStatus.OK);
 	}
 
 	/*
@@ -399,14 +403,12 @@ public class TestManagementController {
 	 * Return: Return an appropriate message
 	 */
 	@PutMapping(value = "/updatequestionsubmit")
-	public ResponseEntity<?> actualUpdate(@ModelAttribute("question") Question question) {
+	public ResponseEntity<?> actualUpdate(@RequestBody Question question) {
 		logger.info("Entered Update question method");
 		OnlineTest test;
 		Question questionOne;
 		try {
-			OnlineTest searchtest = question.getOnlinetest();
-			System.out.println(searchtest.getTestId());
-			test = testservice.searchTest(searchtest.getTestId());
+			test = testservice.searchTest(question.getOnlinetest().getTestId());
 			questionOne = new Question();
 			questionOne.setQuestionId(question.getQuestionId());
 			questionOne.setQuestionTitle(question.getQuestionTitle());
@@ -417,13 +419,13 @@ public class TestManagementController {
 			questionOne.setIsDeleted(false);
 			questionOne.setMarksScored(new Double(0));
 			questionOne.setOnlinetest(test);
-			testservice.updateQuestion(searchtest.getTestId(), question.getQuestionId(), questionOne);
+			testservice.updateQuestion(question.getOnlinetest().getTestId(), question.getQuestionId(), questionOne);
 			logger.info("question updated successfully");
 		} catch (UserException e) {
 			logger.error(e.getMessage());
-			return new ResponseEntity<String>("Question could not be updated!", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>(JSONObject.quote("Question could not be updated!"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<String>(questionOne.toString(), HttpStatus.OK);
+		return new ResponseEntity<String>(JSONObject.quote("Question updated successfully!"), HttpStatus.OK);
 	}
 
 	/*
@@ -488,23 +490,24 @@ public class TestManagementController {
 				if(question.getIsDeleted()!=true) {
 					qlist.add(question.getQuestionId());
 					Question foundQuestion;
-					try {
-						foundQuestion = testservice.searchQuestion(question.getQuestionId());
-						Question newQuestion = new Question();
-						newQuestion.setQuestionId(foundQuestion.getQuestionId());
-						newQuestion.setQuestionTitle(foundQuestion.getQuestionTitle());
-						newQuestion.setQuestionOptions(foundQuestion.getQuestionOptions());
-						newQuestion.setQuestionMarks(foundQuestion.getQuestionMarks());
-						questionList.add(newQuestion);
-					} catch (UserException e) {
-						// TODO Auto-generated catch block
-						return;
-					}					
+						try {
+							foundQuestion = testservice.searchQuestion(question.getQuestionId());
+							Question newQuestion = new Question();
+							newQuestion.setQuestionId(foundQuestion.getQuestionId());
+							newQuestion.setQuestionTitle(foundQuestion.getQuestionTitle());
+							newQuestion.setQuestionOptions(foundQuestion.getQuestionOptions());
+							newQuestion.setQuestionMarks(foundQuestion.getQuestionMarks());
+							questionList.add(newQuestion);
+						} catch (UserException e) {
+							logger.error("Question not found");
+						}
+						
+					}			
 				}
-			});
+			);
 			return new ResponseEntity<List<Question>>(questionList, HttpStatus.OK);
 		} catch (UserException e) {
-			return new ResponseEntity<String>("No Questions found!", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>(JSONObject.quote(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -518,18 +521,24 @@ public class TestManagementController {
 	public ResponseEntity<?> searchQuestion(@RequestParam("id") long id) {
 		try {
 			Question question = testservice.searchQuestion(id);
-			if(question != null) {
+			if(question != null && question.getIsDeleted()==false) {
 				Question newQuestion = new Question();
+				OnlineTest test = question.getOnlinetest();
+				test.setTestQuestions(null); 
+				newQuestion.setQuestionId(id);
+				newQuestion.setChosenAnswer(0);
+				newQuestion.setIsDeleted(false);
+				newQuestion.setMarksScored(0.0);
 				newQuestion.setQuestionTitle(question.getQuestionTitle());
 				newQuestion.setQuestionOptions(question.getQuestionOptions());
 				newQuestion.setQuestionAnswer(question.getQuestionAnswer());
 				newQuestion.setQuestionMarks(question.getQuestionMarks());
-				newQuestion.setOnlinetest(question.getOnlinetest());
+				newQuestion.setOnlinetest(test);
 				return new ResponseEntity<Question>(newQuestion, HttpStatus.OK);
 			}
 		} catch (UserException e) {
-			return new ResponseEntity<String>("Question not found!", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>(JSONObject.quote(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<String>("Question not found!", HttpStatus.INTERNAL_SERVER_ERROR);		
+		return new ResponseEntity<String>(JSONObject.quote("Question not found!"), HttpStatus.INTERNAL_SERVER_ERROR);		
 	}
 }
