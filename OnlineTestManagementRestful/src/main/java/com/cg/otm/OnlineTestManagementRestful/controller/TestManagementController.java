@@ -14,36 +14,45 @@ import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jackson.JsonObjectDeserializer;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+
 import com.cg.otm.OnlineTestManagementRestful.dto.OnlineTest;
 import com.cg.otm.OnlineTestManagementRestful.dto.Question;
 import com.cg.otm.OnlineTestManagementRestful.dto.User;
 import com.cg.otm.OnlineTestManagementRestful.exception.UserException;
+import com.cg.otm.OnlineTestManagementRestful.repository.UserRepository;
 import com.cg.otm.OnlineTestManagementRestful.service.OnlineTestService;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 
 
 
 
 @RestController
+@CrossOrigin(origins="http://localhost:4200")
 public class TestManagementController {
 	@Autowired 
 	OnlineTestService testservice;
-
+	@Autowired
+	UserRepository userRepository;
 	private static int num = 0;
 
 	/*Mapping for the home page*/
@@ -60,9 +69,10 @@ public class TestManagementController {
 
 	/*Mapping for the page to display after add test form is submitted*/
 	@PostMapping(value = "/addtest")
-	public ResponseEntity<String> addTest(@ModelAttribute("test") OnlineTest test) {
+	public ResponseEntity<String> addTest(@RequestBody OnlineTest test) {
 		OnlineTest testOne = new OnlineTest();
 		try {
+			System.out.println("Inside addTest");
 			Set<Question> question = new HashSet<Question>();
 			testOne.setTestName(test.getTestName());
 			testOne.setTestTotalMarks(new Double(0));
@@ -75,9 +85,10 @@ public class TestManagementController {
 			testOne.setTestQuestions(question);
 			testservice.addTest(testOne);
 		} catch (UserException e) {
-			return new ResponseEntity<String>("Data not added", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>(JSONObject.quote("Data not added"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<String>(testOne.toString(),HttpStatus.OK);
+
 	}
 
 //	/*Mapping for the page to display add question form*/
@@ -90,13 +101,12 @@ public class TestManagementController {
 	@PostMapping(value = "/addquestionsubmit")
 	public ResponseEntity<String> addQuestion(@RequestParam("testid") long id, @RequestParam("exfile") MultipartFile file) {
 		try {
-			String UPLOAD_DIRECTORY = "E:\\Excel_Files";
+			String UPLOAD_DIRECTORY = "C:\\Users\\Administrator\\Desktop";
 			String fileName = file.getOriginalFilename();
 			File pathFile = new File(UPLOAD_DIRECTORY);
 			if (!pathFile.exists()) {
 				pathFile.mkdir();
 			}
-
 			long time = new Date().getTime();
 			pathFile = new File(UPLOAD_DIRECTORY + "\\" + time + fileName);
 			file.transferTo(pathFile);
@@ -106,46 +116,102 @@ public class TestManagementController {
 		}
 		return new ResponseEntity<String>("Data Added Successfully!", HttpStatus.OK);
 	}
-
-	/*Mapping for the page to display add user form*/
-	@RequestMapping(value = "/adduser", method = RequestMethod.GET)
-	public String showAddUser(@ModelAttribute("user") User user) {
-		return "AddUser";
-	}
+//
+//	/*Mapping for the page to display add user form*/
+//	@RequestMapping(value = "/adduser", method = RequestMethod.GET)
+//	public String showAddUser(@ModelAttribute("user") User user) {
+//		return "AddUser";
+//	}
 
 	/*Mapping for the page to display after add user form is submitted*/
-	@RequestMapping(value = "/addusersubmit",method=RequestMethod.POST)
-	public String addUser(@ModelAttribute("user") User user) {
-		try {
-			user.setUserTest(null);
-			user.setIsAdmin(false);
-			user.setIsDeleted(false);
-			user.setUserTest(null);
-			testservice.registerUser(user);
-		} catch (UserException e) {
-			System.out.println(e.getMessage());
+//	@RequestMapping(value = "/addusersubmit",method=RequestMethod.POST)
+//	public String addUser(@ModelAttribute("user") User user) {
+//		try {
+//			user.setUserTest(null);
+//			user.setIsAdmin(false);
+//			user.setIsDeleted(false);
+//			user.setUserTest(null);
+//			testservice.registerUser(user);
+//		} catch (UserException e) {
+//			System.out.println(e.getMessage());
+//		}
+//		return "home";
+//	}
+	
+	/*
+	 * Author: Priya Kumari
+	 * Description: This Method is used to add a user
+	 * Return: User Details
+	 */
+	@PostMapping(value="/adduser")
+	public ResponseEntity<User> addUser(@ModelAttribute User user) throws UserException{
+		user.setUserTest(null);
+		user.setIsAdmin(false);
+		user.setIsDeleted(false);
+		user.setUserTest(null);
+		User userone=testservice.registerUser(user);
+		if(userone!=null) {
+			return new ResponseEntity<User>(userone, HttpStatus.OK);
+			
+		}else {
+			return new ResponseEntity("User details cannot be added.!", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return "home";
+		
 	}
 	
-	/*Mapping for the table to display all tests*/
+//	/*Mapping for the table to display all tests*/
+//	@RequestMapping(value = "/showalltests", method = RequestMethod.GET)
+//	public ResponseEntity<List<OnlineTest>> showTest() throws UserException {
+//		List<OnlineTest> testList = testservice.getTests();
+//		if(testList ==null) {
+//			return new ResponseEntity<List<OnlineTest>>(HttpStatus.NO_CONTENT);
+//		}
+//		else {
+//			return new ResponseEntity<List<OnlineTest>>(testList, HttpStatus.OK);
+//		}
+//	}
 	@RequestMapping(value = "/showalltests", method = RequestMethod.GET)
-	public ResponseEntity<List<OnlineTest>> showTest() {
+	public ResponseEntity<List<OnlineTest>> showTest() throws UserException {
+		
 		List<OnlineTest> testList = testservice.getTests();
 		if(testList ==null) {
+		
 			return new ResponseEntity<List<OnlineTest>>(HttpStatus.NO_CONTENT);
 		}
 		else {
+		
 			return new ResponseEntity<List<OnlineTest>>(testList, HttpStatus.OK);
 		}
 	}
 
 	/*Mapping for the table to display all users*/
-	@RequestMapping(value = "/showallusers",method=RequestMethod.GET)
-	public ModelAndView showUser() {
-		List<User> userList = testservice.getUsers();
-		return new ModelAndView("ShowUser", "userdata", userList);
+//	@RequestMapping(value = "/showallusers",method=RequestMethod.GET)
+//	public ModelAndView showUser() {
+//		List<User> userList = testservice.getUsers();
+//		return new ModelAndView("ShowUser", "userdata", userList);
+//	}
+//	
+	
+
+	/*
+	 * Author: Priya Kumari
+	 * Description: This Method is used to return a list of users.
+	 * Return: List of users
+	 */
+	
+	@GetMapping(value="/showusers")
+	public ResponseEntity<List<User>> getAllUsers(){
+		
+		List<User> userone=  testservice.getUsers();
+		if(userone.isEmpty()) {
+			return new ResponseEntity("No user details present",HttpStatus.BAD_REQUEST);
+			
+		}else {
+			return new ResponseEntity<List<User>>(userone,HttpStatus.OK);
+		}
+		
 	}
+	
 	
 	
 
@@ -192,58 +258,60 @@ public class TestManagementController {
 		return new ResponseEntity<String>(deletedQuestion.toString(), HttpStatus.OK);
 	}
 
-	/*Mapping for the page where the user can give test and see the first question*/
-	@RequestMapping(value = "/givetest", method = RequestMethod.GET)
-	public ModelAndView showQuestion(HttpSession session, @ModelAttribute("Question") Question question) {
-		User currentUser = (User) session.getAttribute("user");
-		ModelAndView mav = new ModelAndView("GiveTest");
-
-		if (currentUser.getUserTest() == null) {
-			mav.addObject("heading", "No Test Assigned Yet");
-			return mav;
-		} else {
-			mav.addObject("heading", currentUser.getUserTest().getTestName());
-			if (currentUser.getUserTest().getTestQuestions().toArray().length < num) {
-				return new ModelAndView("user");
+	/*
+	 * Author: Priya Kumari
+	 * Description: This method will show question to user
+	 * Return: Questions
+	 */
+	
+	
+	@GetMapping(value="/givetest")
+	public ResponseEntity<Question> giveTest(@RequestParam("userid") long id) throws UserException{
+		
+			User user=testservice.searchUser(id);
+			if(user.getUserTest() == null) {
+				System.out.println("No Test Assigned Yet");
+			}else {
+				user.getUserTest().getTestQuestions().toArray();
+				if(num< user.getUserTest().getTestQuestions().toArray().length ){
+					
+					
+				}
 			}
-			mav.addObject("questions", currentUser.getUserTest().getTestQuestions().toArray()[num]);
-			num++;
-			return mav;
-		}
+				Question question= (Question) user.getUserTest().getTestQuestions().toArray()[num];
+				return new ResponseEntity<Question>(question, HttpStatus.OK);
 	}
+	
 
+
+	/*
+	 * Author: Priya Kumari
+	 * Description: This method will allow  user to give test
+	 */
+					
 	/*Mapping to display questions one at a time*/
-	@RequestMapping(value = "/givetest", method = RequestMethod.POST)
-	public ModelAndView submitQuestion(HttpSession session, @ModelAttribute("Question") Question question) {
-		User currentUser = (User) session.getAttribute("user");
-		ModelAndView mav = new ModelAndView("GiveTest");
-		Question quest = (Question) currentUser.getUserTest().getTestQuestions().toArray()[num - 1];
+	@PostMapping(value = "/givetest")
+	public ResponseEntity<?> submitQuestion( @ModelAttribute("Question") Question question,@RequestParam("userid") long id) throws UserException {
+		User user=testservice.searchUser(id);
+		Question quest = (Question) user.getUserTest().getTestQuestions().toArray()[num - 1];
 		quest.setChosenAnswer(question.getChosenAnswer());
 		System.out.println(quest);
 		try {
 			System.out.println(
-					testservice.updateQuestion(quest.getOnlinetest().getTestId(), quest.getQuestionId(), quest));
-
-			mav.addObject("heading", currentUser.getUserTest().getTestName());
-			if (num >= currentUser.getUserTest().getTestQuestions().toArray().length) {
+			testservice.updateQuestion(quest.getOnlinetest().getTestId(), quest.getQuestionId(), quest));
+			if (num >= user.getUserTest().getTestQuestions().toArray().length) {
 				num = 0;
-				return new ModelAndView("user");
-			} else {
-				mav.addObject("questions", currentUser.getUserTest().getTestQuestions().toArray()[num]);
-				num++;
-				return mav;
-			}
-		} catch (UserException e) {
+				return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+				}
+			} catch (UserException e) {
 			e.printStackTrace();
-			return new ModelAndView("user");
 		}
+		 Question question1 = (Question) user.getUserTest().getTestQuestions().toArray()[num];
+			num++;
+			return new ResponseEntity<Question>(question1,HttpStatus.OK);
 	}
-
-//	@RequestMapping(value = "assigntest", method = RequestMethod.GET)
-//	public String showAssignTest() {
-//		return "AssignTest";
-//	}
-
+	
+	
 	@PostMapping(value = "assigntestsubmit")
 	public ResponseEntity<?> assignTest(@RequestParam("testid") long testId, @RequestParam("userid") long userId) {
 		try {
@@ -254,30 +322,29 @@ public class TestManagementController {
 		}
 	}
 
-	@RequestMapping(value = "/getresult", method = RequestMethod.GET)
-	public ModelAndView showGetResult(HttpSession session) {
-		User currentUser = (User) session.getAttribute("user");
-		OnlineTest test;
+	/*
+	 * Author: Priya Kumari
+	 * Description: This method will show result to user
+	 * Return: result
+	 */
+	
+	@GetMapping(value="getresult")
+	public ResponseEntity<?> getResult(@RequestParam("userid") long userId){
 		try {
-			test = testservice.searchTest(currentUser.getUserTest().getTestId());
-			Double marksScored = test.getTestMarksScored();
-			test.setTestMarksScored(new Double(0.0));
-			return new ModelAndView("GetResult", "result", marksScored);
-
-		} catch (UserException e) {
-			// TODO Auto-generated catch block
-			System.out.println(e.getMessage());
-			return new ModelAndView("GetResult", "result", 0.0);
+		User user=testservice.searchUser(userId);
+		OnlineTest test=testservice.searchTest(user.getUserTest().getTestId());
+		Double marksScored=test.getTestMarksScored();
+		user.getUserTest().setTestMarksScored(marksScored);
+		return new ResponseEntity<Double>(marksScored,HttpStatus.OK);
+			 
+		}catch(UserException e) {
+			return new ResponseEntity("Test details cannot be found", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
 	}
+	
+	
 
 
-
-//	@RequestMapping(value = "/updatetest", method = RequestMethod.GET)
-//	public String showUpdateTest() {
-//		return "UpdateTest";
-//	}
 
 	@GetMapping(value = "/updatetestinput")
 	public ResponseEntity<?> updateTest(@RequestParam("testid") long id) {
@@ -292,7 +359,7 @@ public class TestManagementController {
 	}
 
 	@PutMapping(value = "/updatetestinput")
-	public ResponseEntity<?> actualUpdate(@ModelAttribute("test") OnlineTest test) {
+	public ResponseEntity<?> actualUpdate(@RequestBody OnlineTest test) {
 		OnlineTest testOne = new OnlineTest();
 		Set<Question> questions = new HashSet<Question>();
 		testOne.setTestId(test.getTestId());
@@ -356,37 +423,74 @@ public class TestManagementController {
 		return "admin";
 	}
 
-	@RequestMapping(value = "/updateuser", method = RequestMethod.GET)
-	public ModelAndView showUpdateUser(@ModelAttribute("user") User user, HttpSession session) {
-		User originalUser = (User) session.getAttribute("user");
-		if (originalUser.getIsAdmin()) {
-			return new ModelAndView("UpdateAdminDetails", "Update", session.getAttribute("user"));
-		}
-		else {
-			return new ModelAndView("UpdateUserDetails", "Update", session.getAttribute("user"));
-		}
-	}
 
-	@RequestMapping(value = "/updateusersubmit", method = RequestMethod.POST)
-	public String actualUpdate(@ModelAttribute("user") User user, HttpSession session) {
-		User originalUser = (User) session.getAttribute("user");
+	
+
+	/*
+	 * Author: Priya Kumari
+	 * Description: This Method is used to get the details of a user whose details we want to update
+	 * Return: User Detail
+	 */
+	@GetMapping(value = "/updateuser")
+	public ResponseEntity<?> updateUser(@RequestParam("userid") long id) {
+		User user;
 		try {
-			User userOne = testservice.searchUser(user.getUserId());
-			userOne.setUserName(user.getUserName());
-			userOne.setUserPassword(user.getUserPassword());
-			userOne.setIsDeleted(false);
-
-			userOne.setIsAdmin(originalUser.getIsAdmin());
-			testservice.updateProfile(userOne);
+			user = testservice.searchUser(id);
+			return new ResponseEntity<User>(user ,HttpStatus.OK);
 		} catch (UserException e) {
 			System.out.println(e.getMessage());
-		}
-		if (originalUser.getIsAdmin()) {
-			return "admin";
-		} else {
-			return "user";
+			return new ResponseEntity<String>("User not found", HttpStatus.NO_CONTENT);
 		}
 	}
+
+
+//
+	/*
+	 * Author: Priya Kumari
+	 * Description: This Method is used to update the details of  user
+	 * Return: User Details
+	 */
+	
+	@PutMapping(value = "/updateuser")
+	public ResponseEntity<?> updateUser(@ModelAttribute("user") User user) {
+		
+		User userOne =new User();
+		userOne.setUserName(user.getUserName());
+		userOne.setUserPassword(user.getUserPassword());
+		userOne.setUserTest(null);
+		userOne.setIsAdmin(false);
+		userOne.setIsDeleted(false);
+		try {
+			User userReturned=testservice.updateProfile(user);
+			
+			return new ResponseEntity<User>(userReturned, HttpStatus.OK);
+		} catch (UserException e) {
+			System.out.println(e.getMessage());
+			return new ResponseEntity<String>("User details cannnot be updated due to some error", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+
+	//	@RequestMapping(value = "/updateusersubmit", method = RequestMethod.POST)
+//	public String actualUpdate(@ModelAttribute("user") User user, HttpSession session) {
+//		User originalUser = (User) session.getAttribute("user");
+//		try {
+//			User userOne = testservice.searchUser(user.getUserId());
+//			userOne.setUserName(user.getUserName());
+//			userOne.setUserPassword(user.getUserPassword());
+//			userOne.setIsDeleted(false);
+//
+//			userOne.setIsAdmin(originalUser.getIsAdmin());
+//			testservice.updateProfile(userOne);
+//		} catch (UserException e) {
+//			System.out.println(e.getMessage());
+//		}
+//		if (originalUser.getIsAdmin()) {
+//			return "admin";
+//		} else {
+//			return "user";
+//		}
+//	}
 
 	@RequestMapping(value = "/onlogin", method = RequestMethod.POST)
 	public String onLogin(@ModelAttribute("user") User user, HttpSession session) {

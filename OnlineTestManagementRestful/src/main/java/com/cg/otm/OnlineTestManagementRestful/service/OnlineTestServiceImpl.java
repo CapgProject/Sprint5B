@@ -3,12 +3,14 @@ package com.cg.otm.OnlineTestManagementRestful.service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
 
 import javax.transaction.Transactional;
 
+import org.apache.jasper.tagplugins.jstl.core.ForEach;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -41,8 +43,12 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 	
 	@Autowired
 	UserRepository userRepository;
-	
-	 //Method to register a user.
+
+    
+
+	/* Method to register a user.
+	 * Author<Priya>
+	 */
     
 	@Override
 	public User registerUser(User user) throws UserException {
@@ -77,6 +83,7 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 		}
 		return question;
 	}
+	
 
 	@Override
 	public Boolean assignTest(Long userId, Long testId) throws UserException {
@@ -236,12 +243,32 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 	@Override
 	public User updateProfile(User user) throws UserException {
 
-		User returnedUser = userRepository.findById(user.getUserId()).orElse(null);
+		User returnedUser = userRepository.save(user);
 		if (returnedUser == null) {
 			throw new UserException(ExceptionMessage.USERMESSAGE);
 		}
 		return returnedUser;
 	}
+//	
+//	public OnlineTest updateTest(Long testId, OnlineTest onlineTest) throws UserException {
+//		OnlineTest temp = testRepository.findByTestId(testId);
+//		if (temp != null) {
+//			temp.setTestId(testId);
+//			temp.setTestName(onlineTest.getTestName());
+//			temp.setTestDuration(onlineTest.getTestDuration());
+//			temp.setStartTime(onlineTest.getStartTime());
+//			temp.setEndTime(onlineTest.getEndTime());
+//			temp.setIsdeleted(onlineTest.getIsdeleted());
+//			temp.setIsTestAssigned(onlineTest.getIsTestAssigned());
+//			temp.setTestMarksScored(onlineTest.getTestMarksScored());
+//			temp.setTestQuestions(onlineTest.getTestQuestions());
+//			temp.setTestTotalMarks(onlineTest.getTestMarksScored());
+//			testRepository.save(temp);
+//			return onlineTest;
+//		} else
+//			throw new UserException(ExceptionMessage.TESTMESSAGE);
+//	}
+
 	 //Method to get the list of all Users.
      
 	@Override
@@ -249,10 +276,7 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 		return userRepository.findAll();
 	}
 
-	@Override
-	public List<OnlineTest> getTests() {
-		return testRepository.findAllNotAssignedAndNotDeleted();
-	}
+	
 
 	@Override
 	public Question searchQuestion(Long questionId) throws UserException {
@@ -274,7 +298,7 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 	
 	@Override
 	public void readFromExcel(long id, String fileName, long time) throws IOException, UserException {
-		String UPLOAD_DIRECTORY = "E:\\Excel_Files";
+		String UPLOAD_DIRECTORY = "C:\\\\Users\\\\Administrator\\\\Desktop";
 		File dataFile = new File(UPLOAD_DIRECTORY + "\\" + time + fileName);
 		FileInputStream fis = new FileInputStream(dataFile);
 		XSSFWorkbook workbook = new XSSFWorkbook(fis);
@@ -333,6 +357,28 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 			questionRepository.save(question);
 		}
 		fis.close();
+	}
+
+	@Override
+	public List<OnlineTest> getTests()  {
+		// TODO Auto-generated method stub
+		ArrayList<OnlineTest> testList = new ArrayList<OnlineTest>( );
+		
+		 List<OnlineTest> test= testRepository.findAllNotAssignedAndNotDeleted();
+		 for (OnlineTest onlineTest : test) {
+
+			 if(onlineTest.getTestQuestions()!=null) {
+				 OnlineTest newtest=new OnlineTest();
+				   newtest.setTestId(onlineTest.getTestId());
+				   newtest.setTestName(onlineTest.getTestName());
+				   newtest.setTestDuration(onlineTest.getTestDuration());
+				   newtest.setStartTime(onlineTest.getStartTime());
+				   newtest.setEndTime(onlineTest.getEndTime());
+				   testList.add(newtest);
+				 }
+			}
+		 return testList;
+		//return testRepository.findAllNotAssignedAndNotDeleted();
 	}
 
 
