@@ -3,7 +3,6 @@
  */
 package com.cg.otm.OnlineTestManagementRestful.controller;
 import java.util.ArrayList;
-import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,14 +18,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import com.cg.otm.OnlineTestManagementRestful.service.JwtUserDetailsService;
-
 
 import com.cg.otm.OnlineTestManagementRestful.config.JwtTokenUtil;
 import com.cg.otm.OnlineTestManagementRestful.dto.User;
 import com.cg.otm.OnlineTestManagementRestful.model.JwtRequest;
 import com.cg.otm.OnlineTestManagementRestful.model.JwtResponse;
 import com.cg.otm.OnlineTestManagementRestful.model.UserDTO;
+import com.cg.otm.OnlineTestManagementRestful.service.JwtUserDetailsService;
 /**
  * Author: Swanand Pande
  * Description: Mappings for authenticating and registering the user

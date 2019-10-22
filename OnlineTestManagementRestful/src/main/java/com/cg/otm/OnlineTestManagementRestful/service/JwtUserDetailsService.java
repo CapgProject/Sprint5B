@@ -2,26 +2,20 @@
  * 
  */
 package com.cg.otm.OnlineTestManagementRestful.service;
-import com.cg.otm.OnlineTestManagementRestful.dto.MyUserDetails;
-import com.cg.otm.OnlineTestManagementRestful.dto.User;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.cg.otm.OnlineTestManagementRestful.dto.MyUserDetails;
+import com.cg.otm.OnlineTestManagementRestful.dto.User;
 import com.cg.otm.OnlineTestManagementRestful.model.UserDTO;
 import com.cg.otm.OnlineTestManagementRestful.repository.UserRepository;
 

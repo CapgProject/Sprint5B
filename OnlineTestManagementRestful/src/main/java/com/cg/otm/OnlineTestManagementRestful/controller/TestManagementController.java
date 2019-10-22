@@ -5,12 +5,22 @@ package com.cg.otm.OnlineTestManagementRestful.controller;
  * Description: Main controller for handling all the mappings
  */
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -28,7 +38,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,6 +47,9 @@ import com.cg.otm.OnlineTestManagementRestful.dto.Question;
 import com.cg.otm.OnlineTestManagementRestful.dto.User;
 import com.cg.otm.OnlineTestManagementRestful.exception.UserException;
 import com.cg.otm.OnlineTestManagementRestful.service.OnlineTestService;
+import com.cg.otm.OnlineTestManagementRestful.view.PDFView;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.codec.Base64.OutputStream;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -298,15 +310,20 @@ public class TestManagementController {
 	public ResponseEntity<?> getResult(@RequestParam("userid") long userId){
 		try {
 			logger.info("Entered get result method");
-		User user=testservice.searchUser(userId);
-		OnlineTest test=testservice.searchTest(user.getUserTest().getTestId());
-		Double marksScored=test.getTestMarksScored();
-		logger.info("Result displayed successfully");
-		return new ResponseEntity<Double>(marksScored,HttpStatus.OK);
-			 
+			User user=testservice.searchUser(userId);
+			if(user.getUserTest()!= null) {
+				OnlineTest test=testservice.searchTest(user.getUserTest().getTestId());
+				Double marksScored=test.getTestMarksScored();
+				logger.info("Result displayed successfully");
+				return new ResponseEntity<String>(JSONObject.quote("You Have Scored " + marksScored + ""),HttpStatus.OK);
+			}
+			else {
+				logger.error("No Test Assinged yet");
+				return new ResponseEntity<String>(JSONObject.quote("No Test Assigned yet"), HttpStatus.BAD_REQUEST);
+			}
 		}catch(UserException e) {
 			logger.error(e.getMessage());
-			return new ResponseEntity<String>("Test details cannot be found", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>(JSONObject.quote("Test details cannot be found"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
@@ -482,5 +499,91 @@ public class TestManagementController {
 			return new ResponseEntity<String>("No Questions found!", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	/*
+	 * Author: Piyush Daswani 
+	 * Description: This Method is used to navigate to the result pdf page 
+	 * Input: button click 
+	 * Return: Pdf page
+	 */
+	@GetMapping(value = "/resultpdf", produces = "application/pdf")
+	public ResponseEntity<String> download( HttpServletRequest request,
+            HttpServletResponse response, @RequestParam("userid")Long userId) {
+		String filePath;
+		try {
+			logger.info("Entered Result Pdf");
+			User user = testservice.searchUser(userId);
+			OnlineTest test = user.getUserTest();
+			if(test != null) {
+				System.out.println("here");
+				Map<String,Object> model = new HashMap<String, Object>();
+				model.put("test", test);
+				filePath=new PDFView().GetPdf(model);
+		        ServletContext context = request.getServletContext();      
+		        File downloadFile = new File(filePath);
+		        FileInputStream inputStream = new FileInputStream(downloadFile);
+		        String mimeType = context.getMimeType(filePath);
+		        if (mimeType == null) {
+		            mimeType = "application/octet-stream";
+		        }
+		        logger.info("MIME type: " + mimeType);
+		        response.setContentType(mimeType);
+		        response.setContentLength((int) downloadFile.length());
+		        String headerKey = "Content-Disposition";
+		        String headerValue = String.format("filename=\"%s\"",
+		                downloadFile.getName());
+		        response.setHeader(headerKey, headerValue);
+		        ServletOutputStream outStream = response.getOutputStream();
+		        byte[] buffer = new byte[4096];
+		        int bytesRead = -1;
+		        while ((bytesRead = inputStream.read(buffer)) != -1) {
+		            outStream.write(buffer, 0, bytesRead);
+		        }
+		        inputStream.close();
+		        outStream.close();
+			}
+			else {
+				return new ResponseEntity<String>("Error",HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} catch (DocumentException | UserException | IOException e) {
+			logger.error("Error Generating Result");
+			return new ResponseEntity<String>("Error",HttpStatus.INTERNAL_SERVER_ERROR);
+		}catch(Exception e){
+			logger.error("Error Generating Result");
+			return new ResponseEntity<String>("Error",HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		logger.info("Returning result");
+		return new ResponseEntity<String>("Error",HttpStatus.OK);
+	}
 
+	
+//	@GetMapping(value="/resultpdf",produces = "application/pdf")
+//	public Response downloadpdf(@RequestParam("userid")Long userId){
+//		String filePath;
+//		try {
+//			logger.info("Entered Result Pdf");
+//			User user = testservice.searchUser(userId);
+//			OnlineTest test = user.getUserTest();
+//			if(test != null) {
+//				System.out.println("here");
+//				Map<String,Object> model = new HashMap<String, Object>();
+//				model.put("test", test);
+//				filePath=new PDFView().GetPdf(model);      
+//		        File downloadFile = new File(filePath);
+//		        FileInputStream fileInputStream = new FileInputStream(downloadFile);
+//		        ResponseBuilder responseBuilder = Response.ok((Object) fileInputStream);
+//		        responseBuilder.type("application/pdf");
+//		        responseBuilder.header("Content-Disposition", "filename="+ filePath);
+//		        return responseBuilder.build();
+//			}
+//		}
+//		catch(UserException e){
+//			logger.info(e.getMessage());
+//		}catch(Exception e) {
+//			logger.info(e.getMessage());
+//		}
+//		ResponseBuilder builder = Response.serverError();
+//		return builder.build();
+//
+//	}
 }
