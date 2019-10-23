@@ -1,15 +1,7 @@
 package com.cg.otm.OnlineTestManagementRestful.controller;
-/**
- * Author: Swanand Pande, Piyush Daswani, Priya Kumari
- * Description: Main controller for handling all the mappings
- */
-import org.springframework.web.bind.annotation.RestController;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,19 +14,14 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.dom4j.DocumentException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,8 +32,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+/**
+ * Author: Swanand Pande, Piyush Daswani, Priya Kumari
+ * Description: Main controller for handling all the mappings
+ */
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.cg.otm.OnlineTestManagementRestful.dto.AssignTestData;
 import com.cg.otm.OnlineTestManagementRestful.dto.OnlineTest;
@@ -63,7 +54,7 @@ public class TestManagementController {
 	OnlineTestService testservice;
 
 	private static final Logger logger = LoggerFactory.getLogger(TestManagementController.class);
-	private static int num = 0;
+
 
 
 	/*
@@ -233,10 +224,10 @@ public class TestManagementController {
 	@DeleteMapping(value = "removequestionsubmit")
 	public ResponseEntity<?> removeQuestion(@RequestParam("questionid") long id) {
 		logger.info("Entered remove question method");
-		Question deletedQuestion;
+
 		try {
 			Question question = testservice.searchQuestion(id);
-			deletedQuestion = testservice.deleteQuestion(question.getOnlinetest().getTestId(), question.getQuestionId());
+			testservice.deleteQuestion(question.getOnlinetest().getTestId(), question.getQuestionId());
 			logger.info("Question deleted Successfully");
 		} catch (UserException e) {
 			logger.error(e.getMessage());
