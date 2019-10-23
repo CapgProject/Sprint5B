@@ -469,7 +469,7 @@ public class TestManagementController {
 			userOne.setUserName(user.getUserName());
 			userOne.setUserPassword(user.getUserPassword());
 			userOne.setIsDeleted(false);
-			testservice.updateProfile(user);
+			testservice.updateProfile(userOne);
 			logger.info("User successfully updated");			
 			return new ResponseEntity<String>(JSONObject.quote("User successfully Updated"), HttpStatus.OK);
 		}
