@@ -131,7 +131,7 @@ public class TestManagementController {
 	 * Return: Return an appropriate message
 	 */
 	@PostMapping(value = "/addquestionsubmit", consumes = "multipart/form-data")
-	public ResponseEntity<String> addQuestion(@RequestParam("testid") long id, @RequestParam("exfile") MultipartFile file) {
+	public ResponseEntity<?> addQuestion(@RequestParam("testid") long id, @RequestParam("exfile") MultipartFile file) {
 		try {
 			logger.info("Entered add question method");
 			String UPLOAD_DIRECTORY = "E:\\Excel_Files";
@@ -183,7 +183,7 @@ public class TestManagementController {
 		List<User> userone=  testservice.getUsers();
 		if(userone.isEmpty()) {
 			logger.info("No users");
-			return new ResponseEntity<String>("No user details present",HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>(JSONObject.quote("No user details present"),HttpStatus.BAD_REQUEST);
 			
 		}else {
 			logger.info("Users displayed successfully");
@@ -220,7 +220,7 @@ public class TestManagementController {
 			}
 		} catch (UserException e) {
 			logger.error(e.getMessage());
-			return new ResponseEntity<String>("Test id doesnt exist", HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>(JSONObject.quote("Test id doesnt exist"), HttpStatus.BAD_REQUEST);
 		}
 	}
 
@@ -259,7 +259,7 @@ public class TestManagementController {
 			currentUser = testservice.searchUser(userId);
 			if (currentUser.getUserTest() == null) {
 				logger.info("No Test was assigned");
-				return new ResponseEntity<String>("No Test Assigned", HttpStatus.BAD_REQUEST);
+				return new ResponseEntity<String>(JSONObject.quote("No Test Assigned"), HttpStatus.BAD_REQUEST);
 			} else {
 				Set<Question> questions =new HashSet<Question>();
 				if (0 < currentUser.getUserTest().getTestQuestions().toArray().length) {
@@ -288,7 +288,7 @@ public class TestManagementController {
 
 		} catch (UserException e) {
 			logger.error(e.getMessage());
-			return new ResponseEntity<String>("User id was incorrect", HttpStatus.NO_CONTENT);
+			return new ResponseEntity<String>(JSONObject.quote("User id was incorrect"), HttpStatus.NO_CONTENT);
 		}
 	}
 
@@ -389,7 +389,7 @@ public class TestManagementController {
 			return new ResponseEntity<OnlineTest>(testOne,HttpStatus.OK);
 		} catch (UserException e) {
 			logger.error(e.getMessage());
-			return new ResponseEntity<String>("Test not found", HttpStatus.NO_CONTENT);
+			return new ResponseEntity<String>(JSONObject.quote("Test not found"), HttpStatus.NO_CONTENT);
 		}
 	}
 
