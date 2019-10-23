@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -416,6 +417,17 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 			throw new UserException(ExceptionMessage.TESTNOTFOUNDMESSAGE);
 		}
 		return question;
+	}
+
+	@Override
+	public User searchUserByName(String name) throws UserException {
+		Optional<User> returnedUser = userRepository.findByUserName(name);
+		System.out.println(returnedUser.get());
+		if(returnedUser.get() != null)
+			return returnedUser.get();
+		else {
+			throw new UserException(ExceptionMessage.USERMESSAGE);
+		}
 	}
 
 }

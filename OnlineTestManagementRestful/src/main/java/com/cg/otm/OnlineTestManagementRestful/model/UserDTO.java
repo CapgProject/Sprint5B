@@ -9,8 +9,8 @@ package com.cg.otm.OnlineTestManagementRestful.model;
  */
 public class UserDTO {
 
-	private String userName;
-	private String userPassword;
+	private String username;
+	private String password;
 	private Boolean isAdmin;
 	private Boolean isDeleted;
 	
@@ -31,19 +31,26 @@ public class UserDTO {
 	}
 
 	public String getUsername() {
-		return userName;
+		return username;
 	}
 
 	public void setUsername(String username) {
-		this.userName = username;
+		this.username = username;
 	}
 
 	public String getPassword() {
-		return userPassword;
+		return password;
 	}
 
 	public void setPassword(String password) {
-		this.userPassword = password;
+		this.password = password;
 	}
+
+	@Override
+	public String toString() {
+		return "UserDTO [userName=" + username + ", userPassword=" + password + ", isAdmin=" + isAdmin
+				+ ", isDeleted=" + isDeleted + "]";
+	}
+	
 	
 }
