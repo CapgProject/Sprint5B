@@ -26,7 +26,7 @@ public class PDFView{
 		System.out.println("In pdf");
 		try{
 			OnlineTest test = (OnlineTest) model.get("test");
-			String FILE="D:/Soft/Workspace/Project/src/assets/results/Result"+ test.getTestName() +".pdf";
+			String FILE=System.getProperty("catalina.base")+ test.getTestName() +".pdf";
 			Document document = new Document();
 			PdfWriter.getInstance(document, new FileOutputStream(FILE));
 			document.open();

@@ -134,7 +134,7 @@ public class TestManagementController {
 	public ResponseEntity<String> addQuestion(@RequestParam("testid") long id, @RequestParam("exfile") MultipartFile file) {
 		try {
 			logger.info("Entered add question method");
-			String UPLOAD_DIRECTORY = "D:\\Excel_Files";
+			String UPLOAD_DIRECTORY = "E:\\Excel_Files";
 			String fileName = file.getOriginalFilename();
 			File pathFile = new File(UPLOAD_DIRECTORY);
 			if (!pathFile.exists()) {  //If the given path does not exist then create the directory
@@ -187,7 +187,13 @@ public class TestManagementController {
 			
 		}else {
 			logger.info("Users displayed successfully");
-			return new ResponseEntity<List<User>>(userone,HttpStatus.OK);
+			List<User> users = new ArrayList<User>();
+			userone.forEach(user->{
+				user.setUserTest(null);
+				if(!user.getIsDeleted() && !user.getIsAdmin())
+					users.add(user);
+			});
+			return new ResponseEntity<List<User>>(users,HttpStatus.OK);
 		}
 		
 	}
@@ -206,11 +212,11 @@ public class TestManagementController {
 			OnlineTest deletedTest = testservice.deleteTest(deleteTest.getTestId());
 			if(deletedTest != null) {
 				logger.info("test deleted successfully");
-				return new ResponseEntity<OnlineTest>(deletedTest,HttpStatus.OK);
+				return new ResponseEntity<String>(JSONObject.quote("Test Deleted Successfully"),HttpStatus.OK);
 			}
 			else {
 				logger.info("Test id doesnt exist");
-				return new ResponseEntity<String>("test id doesnt exist",HttpStatus.INTERNAL_SERVER_ERROR);
+				return new ResponseEntity<String>(JSONObject.quote("Test id doesnt exist"),HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		} catch (UserException e) {
 			logger.error(e.getMessage());
@@ -323,7 +329,7 @@ public class TestManagementController {
 			
 		} catch (UserException e) {
 			logger.error(e.getMessage());
-			return new ResponseEntity<String>("Test could not be assigned!", HttpStatus.NO_CONTENT);
+			return new ResponseEntity<String>(JSONObject.quote(e.getMessage()), HttpStatus.BAD_REQUEST);
 		}
 	}
 	
@@ -368,7 +374,19 @@ public class TestManagementController {
 		OnlineTest test;
 		try {
 			test = testservice.searchTest(id);
-			return new ResponseEntity<OnlineTest>(test,HttpStatus.OK);
+			OnlineTest testOne = new OnlineTest();
+			Set<Question> questions = new HashSet<Question>();
+			testOne.setTestId(test.getTestId());
+			testOne.setTestName(test.getTestName());
+			testOne.setTestDuration(test.getTestDuration());
+			testOne.setStartTime(test.getStartTime());
+			testOne.setEndTime(test.getEndTime());
+			testOne.setIsdeleted(false);
+			testOne.setTestMarksScored(new Double(0));
+			testOne.setTestTotalMarks(new Double(0));
+			testOne.setTestQuestions(questions);
+			testOne.setIsTestAssigned(false);
+			return new ResponseEntity<OnlineTest>(testOne,HttpStatus.OK);
 		} catch (UserException e) {
 			logger.error(e.getMessage());
 			return new ResponseEntity<String>("Test not found", HttpStatus.NO_CONTENT);
@@ -383,20 +401,18 @@ public class TestManagementController {
 	 */
 	@PutMapping(value = "/updatetestinput")
 	public ResponseEntity<?> actualUpdate(@RequestBody OnlineTest test) {
-		OnlineTest testOne = new OnlineTest();
-		Set<Question> questions = new HashSet<Question>();
-		testOne.setTestId(test.getTestId());
-		testOne.setTestName(test.getTestName());
-		testOne.setTestDuration(test.getTestDuration());
-		testOne.setStartTime(test.getStartTime());
-		testOne.setEndTime(test.getEndTime());
-		testOne.setIsdeleted(false);
-		testOne.setTestMarksScored(new Double(0));
-		testOne.setTestTotalMarks(new Double(0));
-		testOne.setTestQuestions(questions);
-		testOne.setIsTestAssigned(false);
+		OnlineTest testOne;
 		try {
-			OnlineTest returnedTest = testservice.updateTest(test.getTestId(), testOne);
+			testOne = testservice.searchTest(test.getTestId());
+			testOne.setTestId(test.getTestId());
+			testOne.setTestName(test.getTestName());
+			testOne.setTestDuration(test.getTestDuration());
+			testOne.setStartTime(test.getStartTime());
+			testOne.setEndTime(test.getEndTime());
+			testOne.setIsdeleted(false);
+			System.out.println(testOne.getTestQuestions());
+			testOne.setIsTestAssigned(false);
+			testservice.updateTest(test.getTestId(), testOne);
 			return new ResponseEntity<String>(JSONObject.quote("Test Updated Successfully"), HttpStatus.OK);
 		} catch (UserException e) {
 			logger.error(e.getMessage());
@@ -436,26 +452,8 @@ public class TestManagementController {
 		return new ResponseEntity<String>(JSONObject.quote("Question updated successfully!"), HttpStatus.OK);
 	}
 
-	/*
-	 * Author: Priya Kumari
-	 * Description: This Method is used to get the details of a user whose details we want to update
-	 * Return: User Detail
-	 */
-	@GetMapping(value = "/updateuser")
-	public ResponseEntity<?> updateUser(@RequestParam("userid") long id) {
-		User user;
-		try {
-			
-			user = testservice.searchUser(id);
-			return new ResponseEntity<User>(user ,HttpStatus.OK);
-		} catch (UserException e) {
-			logger.error(e.getMessage());
-			return new ResponseEntity<String>("User not found", HttpStatus.NO_CONTENT);
-		}
-	}
 
 
-//
 	/*
 	 * Author: Priya Kumari
 	 * Description: This Method is used to update the details of  user
@@ -560,8 +558,14 @@ public class TestManagementController {
 			System.out.println(username);
 			User user = testservice.searchUserByName(username);
 			if(user != null) {
-				
-				return new ResponseEntity<User>(user, HttpStatus.OK);
+				User returnedUser = new User();
+				returnedUser.setIsAdmin(user.getIsAdmin());
+				returnedUser.setIsDeleted(user.getIsDeleted());
+				returnedUser.setUserId(user.getUserId());
+				returnedUser.setUserName(user.getUserName());
+				returnedUser.setUserPassword(user.getUserPassword());
+				returnedUser.setUserTest(null);
+				return new ResponseEntity<User>(returnedUser, HttpStatus.OK);
 			}
 		} catch (UserException e) {
 			return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -618,6 +622,7 @@ public class TestManagementController {
 			logger.error("Error Generating Result");
 			return new ResponseEntity<String>("Error",HttpStatus.INTERNAL_SERVER_ERROR);
 		}catch(Exception e){
+			
 			logger.error("Error Generating Result");
 			return new ResponseEntity<String>("Error",HttpStatus.INTERNAL_SERVER_ERROR);
 		}
