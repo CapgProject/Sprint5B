@@ -27,4 +27,5 @@ public interface OnlineTestService {
 	public User updateProfile(User user) throws UserException;
 	public void readFromExcel(long id, String fileName, long time) throws IOException, UserException;
 	public Question addQuestion(long id, Question question) throws UserException;
+	public User searchUserByName(String name) throws UserException;
 }

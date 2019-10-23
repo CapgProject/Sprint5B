@@ -3,7 +3,7 @@ package com.cg.otm.OnlineTestManagementRestful.model;
 import java.io.Serializable;
 /**
  * Author: Swanand Pande
- * Description: Take teh User Details for authentication
+ * Description: Take the User Details for authentication
  */
 public class JwtRequest implements Serializable{
 

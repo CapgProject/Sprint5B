@@ -66,7 +66,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 						"/removequestionsubmit", "/assigntestsubmit", "/updatetestinput", "/updatequestioninput",
 						"/updatequestionsubmit", "/listquestionsubmit").hasRole("ADMIN")
 				.antMatchers("/givetest", "/getresult").hasRole("USER")
-				.antMatchers("/authenticate", "/register", "/updateusersubmit", "/updateuser").permitAll().
+				.antMatchers("/authenticate", "/register", "/updateusersubmit", "/updateuser", "/searchuser").permitAll().
 				antMatchers(HttpMethod.OPTIONS, "/**").permitAll().
 				// all other requests need to be authenticated
 				anyRequest().authenticated().and().
