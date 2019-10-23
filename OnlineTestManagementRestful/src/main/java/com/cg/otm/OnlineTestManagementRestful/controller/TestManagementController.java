@@ -246,14 +246,26 @@ public class TestManagementController {
 				logger.info("No Test was assigned");
 				return new ResponseEntity<String>("No Test Assigned", HttpStatus.BAD_REQUEST);
 			} else {
-				if (num < currentUser.getUserTest().getTestQuestions().toArray().length) {
-					num++;
-					logger.info("Dispayed 1st question successflly");
-					return new ResponseEntity<String>(
-							currentUser.getUserTest().getTestQuestions().toArray()[num - 1].toString(), HttpStatus.OK);
-
+				Set<Question> questions =new HashSet<Question>();
+				if (0 < currentUser.getUserTest().getTestQuestions().toArray().length) {
+					logger.info("Sent all questions");
+					currentUser.getUserTest().getTestQuestions().forEach(quest->{
+						Question addQuestion = new Question();
+						addQuestion.setQuestionId(quest.getQuestionId());
+						OnlineTest test = quest.getOnlinetest();
+						test.setTestQuestions(null);
+						addQuestion.setOnlinetest(test);
+						addQuestion.setQuestionAnswer(quest.getQuestionAnswer());
+						addQuestion.setIsDeleted(false);
+						addQuestion.setQuestionMarks(quest.getQuestionMarks());
+						addQuestion.setMarksScored(0.0);
+						addQuestion.setChosenAnswer(0);
+						addQuestion.setQuestionOptions(quest.getQuestionOptions());
+						addQuestion.setQuestionTitle(quest.getQuestionTitle());
+						questions.add(addQuestion);
+					});
+					return new ResponseEntity<Set<Question>>(questions, HttpStatus.OK);
 				} else {
-					num = 0;
 					logger.info("Test didn't contain any questions");
 					return new ResponseEntity<String>("No Questions in the test", HttpStatus.NO_CONTENT);
 				}
@@ -272,36 +284,18 @@ public class TestManagementController {
 	 * Return: First Question
 	 */
 	@PutMapping(value = "/givetest")
-	public ResponseEntity<?> submitQuestion(@RequestParam("userid") long userId, @RequestParam("questId") long questId, @RequestParam("chosenanswer") int chosenAnswer) {
+	public ResponseEntity<?> submitQuestion(@RequestBody List<Question> questions) {
 		logger.info("Entered Give test method");
-		User currentUser;
-		try {
-			currentUser = testservice.searchUser(userId);
-			if (currentUser.getUserTest() == null) {
-				logger.info("No Test was assigned");
-				return new ResponseEntity<String>("No Test Assigned", HttpStatus.BAD_REQUEST);
-			} else {
-				Question quest = (Question) currentUser.getUserTest().getTestQuestions().toArray()[num - 1];
-				quest.setChosenAnswer(chosenAnswer);
-				testservice.updateQuestion(currentUser.getUserTest().getTestId(), quest.getQuestionId(), quest);
-				if (num < currentUser.getUserTest().getTestQuestions().toArray().length) {
-					num++;
-					logger.info("Dispayed next question successflly");
-					return new ResponseEntity<String>(
-							currentUser.getUserTest().getTestQuestions().toArray()[num - 1].toString(), HttpStatus.OK);
-
-				} else {
-					num = 0;
-					logger.info("No more questions left");
-					return new ResponseEntity<String>("Test Complete", HttpStatus.OK);
-				}
+		questions.forEach(quest->{
+			try {
+				testservice.updateQuestion(quest.getOnlinetest().getTestId(), quest.getQuestionId(),quest);
+			} catch (UserException e) {
+				logger.error(e.getMessage());
 			}
-
-		} catch (UserException e) {
-			logger.error(e.getMessage());
-			return new ResponseEntity<String>("User id was incorrect", HttpStatus.NO_CONTENT);
-		}
+		});
+		return new ResponseEntity<String>(JSONObject.quote("Test submitted Successfully"), HttpStatus.OK);
 	}
+
 
 
 	/*
@@ -557,5 +551,61 @@ public class TestManagementController {
 			return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<String>(JSONObject.quote("User not found!"), HttpStatus.INTERNAL_SERVER_ERROR);		
+	}
+	
+	/*
+	 * Author: Piyush Daswani 
+	 * Description: This Method is used to navigate to the result pdf page 
+	 * Input: button click 
+	 * Return: Pdf page
+	 */
+	@GetMapping(value = "/resultpdf", produces = "application/pdf")
+	public ResponseEntity<String> download( HttpServletRequest request,
+            HttpServletResponse response, @RequestParam("userid")Long userId) {
+		String filePath;
+		try {
+			logger.info("Entered Result Pdf");
+			User user = testservice.searchUser(userId);
+			OnlineTest test = user.getUserTest();
+			if(test != null) {
+				System.out.println("here");
+				Map<String,Object> model = new HashMap<String, Object>();
+				model.put("test", test);
+				filePath=new PDFView().GetPdf(model);
+		        ServletContext context = request.getServletContext();      
+		        File downloadFile = new File(filePath);
+		        FileInputStream inputStream = new FileInputStream(downloadFile);
+		        String mimeType = context.getMimeType(filePath);
+		        if (mimeType == null) {
+		            mimeType = "application/octet-stream";
+		        }
+		        logger.info("MIME type: " + mimeType);
+		        response.setContentType(mimeType);
+		        response.setContentLength((int) downloadFile.length());
+		        String headerKey = "Content-Disposition";
+		        String headerValue = String.format("filename=\"%s\"",
+		                downloadFile.getName());
+		        response.setHeader(headerKey, headerValue);
+		        ServletOutputStream outStream = response.getOutputStream();
+		        byte[] buffer = new byte[4096];
+		        int bytesRead = -1;
+		        while ((bytesRead = inputStream.read(buffer)) != -1) {
+		            outStream.write(buffer, 0, bytesRead);
+		        }
+		        inputStream.close();
+		        outStream.close();
+			}
+			else {
+				return new ResponseEntity<String>("Error",HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		} catch (DocumentException | UserException | IOException e) {
+			logger.error("Error Generating Result");
+			return new ResponseEntity<String>("Error",HttpStatus.INTERNAL_SERVER_ERROR);
+		}catch(Exception e){
+			logger.error("Error Generating Result");
+			return new ResponseEntity<String>("Error",HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		logger.info("Returning result");
+		return new ResponseEntity<String>("Error",HttpStatus.OK);
 	}
 }
