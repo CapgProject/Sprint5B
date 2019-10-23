@@ -131,7 +131,7 @@ public class TestManagementController {
 	 * Return: Return an appropriate message
 	 */
 	@PostMapping(value = "/addquestionsubmit", consumes = "multipart/form-data")
-	public ResponseEntity<String> addQuestion(@RequestParam("testid") long id, @RequestParam("exfile") MultipartFile file) {
+	public ResponseEntity<?> addQuestion(@RequestParam("testid") long id, @RequestParam("exfile") MultipartFile file) {
 		try {
 			logger.info("Entered add question method");
 			String UPLOAD_DIRECTORY = "D:\\Excel_Files";
@@ -564,7 +564,7 @@ public class TestManagementController {
 				return new ResponseEntity<User>(user, HttpStatus.OK);
 			}
 		} catch (UserException e) {
-			return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>(JSONObject.quote(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<String>(JSONObject.quote("User not found!"), HttpStatus.INTERNAL_SERVER_ERROR);		
 	}

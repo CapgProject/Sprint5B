@@ -5,6 +5,8 @@ package com.cg.otm.OnlineTestManagementRestful.controller;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import org.json.HTTP;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import com.cg.otm.OnlineTestManagementRestful.service.JwtUserDetailsService;
-
-
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.cg.otm.OnlineTestManagementRestful.config.JwtTokenUtil;
 import com.cg.otm.OnlineTestManagementRestful.dto.User;
 import com.cg.otm.OnlineTestManagementRestful.model.JwtRequest;
@@ -63,19 +64,20 @@ public class JwtAuthenticationController {
 			User returnedUser = userDetailsService.save(user);
 			return new ResponseEntity<User>(returnedUser,HttpStatus.OK);
 		}catch(Exception e) {
-			return new ResponseEntity<String>("Same username not allowed",HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>(JSONObject.quote("Same username not allowed"),HttpStatus.BAD_REQUEST);
 		}
 	}
 
-	private void authenticate(String username, String password) throws Exception {
+	private ResponseEntity<?> authenticate(String username, String password) throws Exception {
 		try {
 			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password, new ArrayList<GrantedAuthority>());
 			authenticationManager.authenticate(token);
 		} catch (DisabledException e) {
-			throw new Exception("USER_DISABLED", e);
+			return new ResponseEntity<String>(JSONObject.quote(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		} catch (BadCredentialsException e) {
-			throw new Exception("INVALID_CREDENTIALS", e);
+			return new ResponseEntity<String>(JSONObject.quote("Invalid Credentials"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+		return new ResponseEntity<String>(JSONObject.quote("Cannot Login!"), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }
 
