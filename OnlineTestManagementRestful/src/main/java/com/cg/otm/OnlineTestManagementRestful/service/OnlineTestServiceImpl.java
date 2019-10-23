@@ -364,13 +364,15 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 	 */
 	@Override
 	public void readFromExcel(long id, String fileName, long time) throws IOException, UserException {
-		String UPLOAD_DIRECTORY = "E:\\Excel_Files";
+		String UPLOAD_DIRECTORY = "D:\\Excel_Files";
 		File dataFile = new File(UPLOAD_DIRECTORY + "\\" + time + fileName);
 		FileInputStream fis = new FileInputStream(dataFile);
 		XSSFWorkbook workbook = new XSSFWorkbook(fis);
 		XSSFSheet sheet = workbook.getSheetAt(0);    //Read the first sheet
 		Row row;
-		Double testMarks = 0.0;
+		OnlineTest test = testRepository.findByTestId(id);   //Find the test
+		if(test!= null) {
+		Double testMarks = test.getTestTotalMarks();
 		for (int i = 1; i <= sheet.getLastRowNum(); i++) {
 			row = (Row) sheet.getRow(i);
 			String title;
@@ -400,7 +402,7 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 			}
 
 			Question question = new Question();
-			OnlineTest test = testRepository.findByTestId(id);   //Find the test
+			
 			if(test == null) {
 				throw new UserException(ExceptionMessage.TESTNOTFOUNDMESSAGE);
 			}
@@ -421,6 +423,10 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 			question.setMarksScored(new Double(0));
 			question.setOnlinetest(test);
 			questionRepository.save(question);
+		}
+		}
+		else {
+			throw new UserException(ExceptionMessage.NOTESTMESSAGE);
 		}
 		fis.close();
 	}

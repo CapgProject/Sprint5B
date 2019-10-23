@@ -64,7 +64,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.authorizeRequests()
 				.antMatchers("/addtest", "/addquestionsubmit", "/showalltests", "/showallusers", "/removetestsubmit",
 						"/removequestionsubmit", "/assigntestsubmit", "/updatetestinput", "/updatequestioninput",
-						"/updatequestionsubmit", "/listquestionsubmit").hasRole("ADMIN")
+						"/updatequestionsubmit", "/listquestionsubmit", "/addsinglequestion").hasRole("ADMIN")
 				.antMatchers("/givetest", "/getresult").hasRole("USER")
 				.antMatchers("/authenticate", "/register", "/updateusersubmit", "/updateuser", "/searchuser").permitAll().
 				antMatchers(HttpMethod.OPTIONS, "/**").permitAll().

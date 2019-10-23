@@ -92,7 +92,7 @@ public class TestManagementController {
 		} catch (UserException e) {
 			return new ResponseEntity<String>(JSONObject.quote("Data not added"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<String>(testOne.toString(),HttpStatus.OK);
+		return new ResponseEntity<String>(JSONObject.quote("Test added successfully"),HttpStatus.OK);
 
 	}
 	
@@ -134,7 +134,7 @@ public class TestManagementController {
 	public ResponseEntity<String> addQuestion(@RequestParam("testid") long id, @RequestParam("exfile") MultipartFile file) {
 		try {
 			logger.info("Entered add question method");
-			String UPLOAD_DIRECTORY = "E:\\Excel_Files";
+			String UPLOAD_DIRECTORY = "D:\\Excel_Files";
 			String fileName = file.getOriginalFilename();
 			File pathFile = new File(UPLOAD_DIRECTORY);
 			if (!pathFile.exists()) {  //If the given path does not exist then create the directory
@@ -148,9 +148,9 @@ public class TestManagementController {
 			logger.info("Question added successfully");
 		} catch (UserException | IOException e) {
 			logger.error(e.getMessage());
-			return new ResponseEntity<String>("Data could not be added!", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>(JSONObject.quote(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<String>("Data Added Successfully!", HttpStatus.OK);
+		return new ResponseEntity<String>(JSONObject.quote("Questions Added Successfully!"), HttpStatus.OK);
 	}
 	
 	/*
@@ -397,10 +397,10 @@ public class TestManagementController {
 		testOne.setIsTestAssigned(false);
 		try {
 			OnlineTest returnedTest = testservice.updateTest(test.getTestId(), testOne);
-			return new ResponseEntity<OnlineTest>(returnedTest, HttpStatus.OK);
+			return new ResponseEntity<String>(JSONObject.quote("Test Updated Successfully"), HttpStatus.OK);
 		} catch (UserException e) {
-			System.out.println(e.getMessage());
-			return new ResponseEntity<String>(JSONObject.quote("Test Was not updated"), HttpStatus.INTERNAL_SERVER_ERROR);
+			logger.error(e.getMessage());
+			return new ResponseEntity<String>(JSONObject.quote(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
