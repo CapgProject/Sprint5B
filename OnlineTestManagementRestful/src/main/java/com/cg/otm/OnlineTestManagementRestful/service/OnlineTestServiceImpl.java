@@ -6,6 +6,7 @@ package com.cg.otm.OnlineTestManagementRestful.service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -292,9 +293,14 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 		if (returnedUser == null) {
 			throw new UserException(ExceptionMessage.USERMESSAGE);
 		}
-		return returnedUser;
+		try {
+			userRepository.save(user);
+			return user;
+		}
+		catch(Exception e){
+			throw new UserException("Username already exists!");
+		}
 	}
-	 
 	/*
 	 * Author: Piyush Daswani 
 	 * Description: This Method is used to list the user from the database 

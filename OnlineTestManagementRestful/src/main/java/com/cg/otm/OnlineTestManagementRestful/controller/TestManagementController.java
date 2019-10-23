@@ -115,9 +115,9 @@ public class TestManagementController {
 			logger.info("Question added successfully");
 		} catch (UserException | IOException e) {
 			logger.error(e.getMessage());
-			return new ResponseEntity<String>("Data could not be added!", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>(JSONObject.quote("Data could not be added!"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<String>("Data Added Successfully!", HttpStatus.OK);
+		return new ResponseEntity<String>(JSONObject.quote("Data Added Successfully!"), HttpStatus.OK);
 	}
 	
 	/*
@@ -463,14 +463,17 @@ public class TestManagementController {
 			userOne.setUserName(user.getUserName());
 			userOne.setUserPassword(user.getUserPassword());
 			userOne.setIsDeleted(false);
-
-				User userReturned=testservice.updateProfile(user);
-				logger.info("User successfully updated");			
-				return new ResponseEntity<User>(userReturned, HttpStatus.OK);
+			testservice.updateProfile(user);
+			logger.info("User successfully updated");			
+			return new ResponseEntity<String>(JSONObject.quote("User successfully Updated"), HttpStatus.OK);
 		}
 		catch(UserException e) {
 			logger.error(e.getMessage());
-			return new ResponseEntity<String>("User details cannnot be updated due to some error", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>(JSONObject.quote(e.getMessage()), HttpStatus.BAD_REQUEST);
+		}
+		catch(Exception e) {
+			logger.error(e.getMessage());
+			return new ResponseEntity<String>(JSONObject.quote("Username already exists!"), HttpStatus.BAD_REQUEST);
 		}
 	}
 	
