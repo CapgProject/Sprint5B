@@ -6,6 +6,7 @@ package com.cg.otm.OnlineTestManagementRestful.service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -293,7 +294,13 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 		if (returnedUser == null) {
 			throw new UserException(ExceptionMessage.USERMESSAGE);
 		}
-		return returnedUser;
+		try {
+			userRepository.save(user);
+			return user;
+		}
+		catch(Exception e){
+			throw new UserException("Username already exists!");
+		}
 	}
 	 
 	/*
@@ -313,8 +320,25 @@ public class OnlineTestServiceImpl implements OnlineTestService{
 	 * Return: Return list of tests
 	 */
 	@Override
-	public List<OnlineTest> getTests() {
-		return testRepository.findAllNotAssignedAndNotDeleted();
+	public List<OnlineTest> getTests()  {
+		// TODO Auto-generated method stub
+		ArrayList<OnlineTest> testList = new ArrayList<OnlineTest>( );
+		
+		 List<OnlineTest> test= testRepository.findAllNotAssignedAndNotDeleted();
+		 for (OnlineTest onlineTest : test) {
+
+			 if(onlineTest.getTestQuestions()!=null) {
+				 OnlineTest newtest=new OnlineTest();
+				   newtest.setTestId(onlineTest.getTestId());
+				   newtest.setTestName(onlineTest.getTestName());
+				   newtest.setTestDuration(onlineTest.getTestDuration());
+				   newtest.setStartTime(onlineTest.getStartTime());
+				   newtest.setEndTime(onlineTest.getEndTime());
+				   testList.add(newtest);
+				 }
+			}
+		 return testList;
+		//return testRepository.findAllNotAssignedAndNotDeleted();
 	}
 
 	/*

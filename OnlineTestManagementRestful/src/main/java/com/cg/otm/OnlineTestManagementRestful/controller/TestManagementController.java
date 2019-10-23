@@ -5,18 +5,26 @@ package com.cg.otm.OnlineTestManagementRestful.controller;
  */
 import org.springframework.web.bind.annotation.RestController;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.dom4j.DocumentException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +54,7 @@ import com.cg.otm.OnlineTestManagementRestful.dto.Question;
 import com.cg.otm.OnlineTestManagementRestful.dto.User;
 import com.cg.otm.OnlineTestManagementRestful.exception.UserException;
 import com.cg.otm.OnlineTestManagementRestful.service.OnlineTestService;
+import com.cg.otm.OnlineTestManagementRestful.view.PDFView;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -65,10 +74,10 @@ public class TestManagementController {
 	 */
 	/*Mapping for the page to display after add test form is submitted*/
 	@PostMapping(value = "/addtest")
-	public ResponseEntity<String> addTest(@ModelAttribute("test") OnlineTest test) {
-		logger.info("Entered add test method");
+	public ResponseEntity<String> addTest(@RequestBody OnlineTest test) {
 		OnlineTest testOne = new OnlineTest();
 		try {
+			System.out.println("Inside addTest");
 			Set<Question> question = new HashSet<Question>();
 			testOne.setTestName(test.getTestName());
 			testOne.setTestTotalMarks(new Double(0));
@@ -80,11 +89,11 @@ public class TestManagementController {
 			testOne.setIsTestAssigned(false);
 			testOne.setTestQuestions(question);
 			testservice.addTest(testOne);
-			logger.info("Test added successfully");
 		} catch (UserException e) {
-			return new ResponseEntity<String>("Data not added", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>(JSONObject.quote("Data not added"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		return new ResponseEntity<String>(testOne.toString(),HttpStatus.OK);
+
 	}
 	
 	@PostMapping(value="/addsinglequestion")
@@ -329,15 +338,20 @@ public class TestManagementController {
 	public ResponseEntity<?> getResult(@RequestParam("userid") long userId){
 		try {
 			logger.info("Entered get result method");
-		User user=testservice.searchUser(userId);
-		OnlineTest test=testservice.searchTest(user.getUserTest().getTestId());
-		Double marksScored=test.getTestMarksScored();
-		logger.info("Result displayed successfully");
-		return new ResponseEntity<Double>(marksScored,HttpStatus.OK);
-			 
+			User user=testservice.searchUser(userId);
+			if(user.getUserTest()!= null) {
+				OnlineTest test=testservice.searchTest(user.getUserTest().getTestId());
+				Double marksScored=test.getTestMarksScored();
+				logger.info("Result displayed successfully");
+				return new ResponseEntity<String>(JSONObject.quote("You Have Scored " + marksScored + ""),HttpStatus.OK);
+			}
+			else {
+				logger.error("No Test Assinged yet");
+				return new ResponseEntity<String>(JSONObject.quote("No Test Assigned yet"), HttpStatus.BAD_REQUEST);
+			}
 		}catch(UserException e) {
 			logger.error(e.getMessage());
-			return new ResponseEntity<String>("Test details cannot be found", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>(JSONObject.quote("Test details cannot be found"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
@@ -368,8 +382,7 @@ public class TestManagementController {
 	 * Return: Return an appropriate message
 	 */
 	@PutMapping(value = "/updatetestinput")
-	public ResponseEntity<?> actualUpdate(@ModelAttribute("test") OnlineTest test) {
-		logger.info("Entered update test method");
+	public ResponseEntity<?> actualUpdate(@RequestBody OnlineTest test) {
 		OnlineTest testOne = new OnlineTest();
 		Set<Question> questions = new HashSet<Question>();
 		testOne.setTestId(test.getTestId());
@@ -384,11 +397,10 @@ public class TestManagementController {
 		testOne.setIsTestAssigned(false);
 		try {
 			OnlineTest returnedTest = testservice.updateTest(test.getTestId(), testOne);
-			logger.info("Updated Test Successfully");
 			return new ResponseEntity<OnlineTest>(returnedTest, HttpStatus.OK);
 		} catch (UserException e) {
-			logger.error(e.getMessage());
-			return new ResponseEntity<String>("The test wasnt updated due to some error", HttpStatus.INTERNAL_SERVER_ERROR);
+			System.out.println(e.getMessage());
+			return new ResponseEntity<String>(JSONObject.quote("Test Was not updated"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -453,19 +465,23 @@ public class TestManagementController {
 	@PutMapping(value = "/updateuser")
 	public ResponseEntity<?> updateUser(@ModelAttribute("user") User user) {
 		logger.info("Entered update user method");
-		User userOne =new User();
-		userOne.setUserName(user.getUserName());
-		userOne.setUserPassword(user.getUserPassword());
-		userOne.setUserTest(null);
-		userOne.setIsAdmin(false);
-		userOne.setIsDeleted(false);
+		User userOne;
 		try {
-			User userReturned=testservice.updateProfile(user);
+			userOne = testservice.searchUser(user.getUserId());
+			userOne.setUserName(user.getUserName());
+			userOne.setUserPassword(user.getUserPassword());
+			userOne.setIsDeleted(false);
+			testservice.updateProfile(user);
 			logger.info("User successfully updated");			
-			return new ResponseEntity<User>(userReturned, HttpStatus.OK);
-		} catch (UserException e) {
+			return new ResponseEntity<String>(JSONObject.quote("User successfully Updated"), HttpStatus.OK);
+		}
+		catch(UserException e) {
 			logger.error(e.getMessage());
-			return new ResponseEntity<String>("User details cannnot be updated due to some error", HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<String>(JSONObject.quote(e.getMessage()), HttpStatus.BAD_REQUEST);
+		}
+		catch(Exception e) {
+			logger.error(e.getMessage());
+			return new ResponseEntity<String>(JSONObject.quote("Username already exists!"), HttpStatus.BAD_REQUEST);
 		}
 	}
 
