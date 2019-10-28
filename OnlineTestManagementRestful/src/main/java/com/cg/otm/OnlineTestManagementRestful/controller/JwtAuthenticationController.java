@@ -5,6 +5,7 @@ package com.cg.otm.OnlineTestManagementRestful.controller;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,7 +64,7 @@ public class JwtAuthenticationController {
 			User returnedUser = userDetailsService.save(user);
 			return new ResponseEntity<User>(returnedUser,HttpStatus.OK);
 		}catch(Exception e) {
-			return new ResponseEntity<String>("Same username not allowed",HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<String>(JSONObject.quote("Same username not allowed"),HttpStatus.BAD_REQUEST);
 		}
 	}
 

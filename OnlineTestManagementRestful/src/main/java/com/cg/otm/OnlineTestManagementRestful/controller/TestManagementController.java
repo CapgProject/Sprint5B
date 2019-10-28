@@ -80,6 +80,8 @@ public class TestManagementController {
 			testOne.setIsTestAssigned(false);
 			testOne.setTestQuestions(question);
 			testservice.addTest(testOne);
+			logger.info("Test Added!");
+			logger.info("Test Created By - "+testOne.getCreatedBy() +" on date "+testOne.getCreationDate());
 		} catch (UserException e) {
 			return new ResponseEntity<String>(JSONObject.quote("Data not added"), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -105,6 +107,7 @@ public class TestManagementController {
 				addQuestion.setOnlinetest(test);
 				testservice.addQuestion(id, addQuestion);
 				logger.info("Question added Successfully");
+				logger.info("Question Created By - "+addQuestion.getCreatedBy() +" on date "+addQuestion.getCreationDate());
 				return new ResponseEntity<String>(JSONObject.quote("Question added Successfully"), HttpStatus.OK);
 			}
 		} catch (UserException e) {
@@ -203,6 +206,7 @@ public class TestManagementController {
 			OnlineTest deletedTest = testservice.deleteTest(deleteTest.getTestId());
 			if(deletedTest != null) {
 				logger.info("test deleted successfully");
+				logger.info("Question Deleted By - "+deletedTest.getLastModifiedBy() +" on date "+deletedTest.getLastModifiedBy());
 				return new ResponseEntity<String>(JSONObject.quote("Test Deleted Successfully"),HttpStatus.OK);
 			}
 			else {
@@ -228,6 +232,7 @@ public class TestManagementController {
 		try {
 			Question question = testservice.searchQuestion(id);
 			testservice.deleteQuestion(question.getOnlinetest().getTestId(), question.getQuestionId());
+			logger.info("Question Deleted By - "+question.getLastModifiedBy() +" on date "+question.getLastModifiedBy());
 			logger.info("Question deleted Successfully");
 		} catch (UserException e) {
 			logger.error(e.getMessage());
@@ -295,6 +300,7 @@ public class TestManagementController {
 		questions.forEach(quest->{
 			try {
 				testservice.updateQuestion(quest.getOnlinetest().getTestId(), quest.getQuestionId(),quest);
+				logger.info("Question Deleted By - "+quest.getLastModifiedBy() +" on date "+quest.getLastModifiedBy());
 			} catch (UserException e) {
 				logger.error(e.getMessage());
 			}
@@ -377,6 +383,7 @@ public class TestManagementController {
 			testOne.setTestTotalMarks(new Double(0));
 			testOne.setTestQuestions(questions);
 			testOne.setIsTestAssigned(false);
+			
 			return new ResponseEntity<OnlineTest>(testOne,HttpStatus.OK);
 		} catch (UserException e) {
 			logger.error(e.getMessage());
@@ -404,6 +411,7 @@ public class TestManagementController {
 			System.out.println(testOne.getTestQuestions());
 			testOne.setIsTestAssigned(false);
 			testservice.updateTest(test.getTestId(), testOne);
+			logger.info("Test Updated By - "+testOne.getLastModifiedBy() +" on date "+testOne.getLastModifiedBy());
 			return new ResponseEntity<String>(JSONObject.quote("Test Updated Successfully"), HttpStatus.OK);
 		} catch (UserException e) {
 			logger.error(e.getMessage());
@@ -436,6 +444,7 @@ public class TestManagementController {
 			questionOne.setOnlinetest(test);
 			testservice.updateQuestion(question.getOnlinetest().getTestId(), question.getQuestionId(), questionOne);
 			logger.info("question updated successfully");
+			logger.info("Question Updated By - "+questionOne.getLastModifiedBy() +" on date "+questionOne.getLastModifiedBy());
 		} catch (UserException e) {
 			logger.error(e.getMessage());
 			return new ResponseEntity<String>(JSONObject.quote("Question could not be updated!"), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -461,7 +470,8 @@ public class TestManagementController {
 			userOne.setUserPassword(user.getUserPassword());
 			userOne.setIsDeleted(false);
 			testservice.updateProfile(userOne);
-			logger.info("User successfully updated");			
+			logger.info("User successfully updated");		
+			logger.info("User Updated By - "+userOne.getLastModifiedBy() +" on date "+userOne.getLastModifiedBy());
 			return new ResponseEntity<String>(JSONObject.quote("User successfully Updated"), HttpStatus.OK);
 		}
 		catch(UserException e) {
@@ -579,7 +589,6 @@ public class TestManagementController {
 			User user = testservice.searchUser(userId);
 			OnlineTest test = user.getUserTest();
 			if(test != null) {
-				System.out.println("here");
 				Map<String,Object> model = new HashMap<String, Object>();
 				model.put("test", test);
 				filePath=new PDFView().GetPdf(model);

@@ -4,7 +4,7 @@ package com.cg.otm.OnlineTestManagementRestful.config;
  * Description - Audit Trail
  */
 import java.util.Optional;
-
+import java.net.*;
 import org.springframework.data.domain.AuditorAware;
 
 public class AuditTrail implements AuditorAware<String>{
@@ -12,7 +12,14 @@ public class AuditTrail implements AuditorAware<String>{
 	@Override
 	public Optional<String> getCurrentAuditor() {
 		// TODO Auto-generated method stub
-		return Optional.of(System.getProperty("user.name"));
+		InetAddress localhost;
+		try {
+			localhost = InetAddress.getLocalHost();
+			return Optional.of((localhost.getHostAddress()).trim());
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			return Optional.of(System.getProperty("user.name"));
+		}
 	}
 
 }
